@@ -5,10 +5,11 @@ Provided programs for ENPM 691 Hacking of C Programs and Unix Binaries at the Un
 ## Programs used in Lecture
 
 ### Lecture 1
-*
+* No programs were referenced.
 
 ### Lecture 2
-*
+* is_little_endian.c
+* sign_extension.c
 
 ### Lecture 3
 *
@@ -40,6 +41,7 @@ Provided programs for ENPM 691 Hacking of C Programs and Unix Binaries at the Un
 | `exit` | Exit gdb |
 | `xb` | Shows Hex |
 | `xt` | Shows Binary |
+| `x/4bt $2` | Shows binary |
 
 ### Helpful Commands
 
