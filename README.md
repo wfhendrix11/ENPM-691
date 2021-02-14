@@ -2,15 +2,25 @@
 
 Provided programs for ENPM 691 Hacking of C Programs and Unix Binaries at the University of Maryland.
 
-## Compiling C Programs
+## Programs used in Lecture
+
+#### Lecture 1
+
+### Lecture 2 
+
+### Lecture 3
+
+## Commands
+
+### Compiling C Programs
 
   `gcc fileName.c -o file-name`
 
-## Running C Programs
+### Running C Programs
 
   `./file-name`
 
-## GDB Commands
+### GDB Commands
 
   `gcc fileName.c -o file-name -ggdb` (Compiles with gdb enabled)
   
@@ -28,7 +38,7 @@ Provided programs for ENPM 691 Hacking of C Programs and Unix Binaries at the Un
 | `xb` | Shows Hex |
 | `xt` | Shows Binary |
 
-## Helpful Commands
+### Helpful Commands
 
 | Command       | Function      |
 | ------------- |:-------------:|
