@@ -4,7 +4,7 @@ Provided programs for ENPM 691 Hacking of C Programs and Unix Binaries at the Un
 
 ## Programs used in Lecture
 
-#### Lecture 1
+### Lecture 1
 
 ### Lecture 2 
 
