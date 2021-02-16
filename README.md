@@ -42,6 +42,7 @@ Provided programs for ENPM 691 Hacking of C Programs and Unix Binaries at the Un
 | `xb` | Shows Hex |
 | `xt` | Shows Binary |
 | `x/4bt $2` | Shows binary |
+| `x/1xw`| Read as "x - examine, 1 - one, w - word, x - in hex"
 
 ### Helpful Commands
 
