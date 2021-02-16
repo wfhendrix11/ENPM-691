@@ -1,0 +1,108 @@
+user@user-VirtualBox:~/Programs/C$ cat is_little_endian.c
+#include <stdio.h>
+
+int is_little_endian(void) {
+
+  int x = 1;
+ 
+  char byte = *(char *) &x;
+  
+  return byte;
+}
+
+int main()
+{
+  printf("is_little_endian:%d\n", is_little_endian());
+
+  return 0;
+}
+user@user-VirtualBox:~/Programs/C$ gdb is-little-endian -q
+Reading symbols from is-little-endian...done.
+(gdb) info function
+All defined functions:
+
+File is_little_endian.c:
+int is_little_endian(void);
+int main();
+
+Non-debugging symbols:
+0x080482f0  _init
+0x08048330  printf@plt
+0x08048340  __stack_chk_fail@plt
+0x08048350  __libc_start_main@plt
+0x08048370  _start
+0x080483a0  __x86.get_pc_thunk.bx
+0x080483b0  deregister_tm_clones
+0x080483e0  register_tm_clones
+0x08048420  __do_global_dtors_aux
+0x08048440  frame_dummy
+0x080484e0  __libc_csu_init
+0x08048540  __libc_csu_fini
+0x08048544  _fini
+(gdb) list 1
+1	#include <stdio.h>
+2	
+3	int is_little_endian(void) {
+4	
+5	  int x = 1;
+6	 
+7	  char byte = *(char *) &x;
+8	  
+9	  return byte;
+10	}
+(gdb) 
+11	
+12	int main()
+13	{
+14	  printf("is_little_endian:%d\n", is_little_endian());
+15	
+16	  return 0;
+17	}
+(gdb) 
+Line number 18 out of range; is_little_endian.c has 17 lines.
+(gdb) break 5
+Breakpoint 1 at 0x804847c: file is_little_endian.c, line 5.
+(gdb) run
+Starting program: /home/user/Programs/C/is-little-endian 
+
+Breakpoint 1, is_little_endian () at is_little_endian.c:5
+5	  int x = 1;
+(gdb) print x
+$1 = -1209820624
+(gdb) break 7
+Breakpoint 2 at 0x8048483: file is_little_endian.c, line 7.
+(gdb) c
+Continuing.
+
+Breakpoint 2, is_little_endian () at is_little_endian.c:7
+7	  char byte = *(char *) &x;
+(gdb) print x
+$2 = 1
+(gdb) print &x
+$3 = (int *) 0xbffff028
+(gdb) x/1xw
+Argument required (starting display address).
+(gdb) x/1xw 0xbffff028
+0xbffff028:	0x00000001
+(gdb) break 9
+Breakpoint 3 at 0x804848c: file is_little_endian.c, line 9.
+(gdb) c
+Continuing.
+
+Breakpoint 3, is_little_endian () at is_little_endian.c:9
+9	  return byte;
+(gdb) print byte
+$4 = 1 '\001'
+(gdb) x/4tb 0xbffff028
+0xbffff028:	00000001	00000000	00000000	00000000
+(gdb) x/1tb 0xbffff028
+0xbffff028:	00000001
+(gdb) x/1tb 0xbffff029
+0xbffff029:	00000000
+(gdb) x/1tb 0xbffff02a
+0xbffff02a:	00000000
+(gdb) x/1tb 0xbffff02b
+0xbffff02b:	00000000
+(gdb) print byte
+$5 = 1 '\001'
+(gdb) 
