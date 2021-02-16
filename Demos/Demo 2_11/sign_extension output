@@ -1,0 +1,94 @@
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc sign_extension.c -o sign-extension -ggdb
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat sign_extension.c
+#include <stdio.h>
+
+int main()
+{
+  short int x = 15213;
+  int ix = (int) x;
+  short int y = -15213;
+  int iy = (int) y;
+  
+  printf("ix=%d, iy=%d\n", ix, iy);
+  return 0;
+}
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb sign-extension
+GNU gdb (Ubuntu 7.11.1-0ubuntu1~16.04) 7.11.1
+Copyright (C) 2016 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "i686-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+<http://www.gnu.org/software/gdb/documentation/>.
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from sign-extension...done.
+(gdb) list 1
+1	#include <stdio.h>
+2	
+3	int main()
+4	{
+5	  short int x = 15213;
+6	  int ix = (int) x;
+7	  short int y = -15213;
+8	  int iy = (int) y;
+9	  
+10	  printf("ix=%d, iy=%d\n", ix, iy);
+(gdb) b 6
+Breakpoint 1 at 0x8048422: file sign_extension.c, line 6.
+(gdb) r
+Starting program: /home/user/Documents/ENPM-691/C Programs/sign-extension 
+
+Breakpoint 1, main () at sign_extension.c:6
+6	  int ix = (int) x;
+(gdb) print x
+$1 = 15213
+(gdb) print &x
+$2 = (short *) 0xbffff004
+(gdb) x/2tb 0xbffff004
+0xbffff004:	01101101	00111011
+(gdb) print /t 15213
+$3 = 11101101101101
+(gdb) ni
+0x08048426	6	  int ix = (int) x;
+(gdb) print ix
+$4 = -1073745716
+(gdb) ni
+7	  short int y = -15213;
+(gdb) print ix
+$5 = 15213
+(gdb) print &ix
+$6 = (int *) 0xbffff008
+(gdb) x/4bt 0xbffff008
+0xbffff008:	01101101	00111011	00000000	00000000
+(gdb) ni
+8	  int iy = (int) y;
+(gdb) print y
+$7 = -15213
+(gdb) print &y
+$8 = (short *) 0xbffff006
+(gdb) x/2bt 0xbffff006
+0xbffff006:	10010011	11000100
+(gdb) ni 8
+ix=15213, iy=-15213
+11	  return 0;
+(gdb) ni
+12	}
+(gdb) print iy
+$9 = -15213
+(gdb) print &iy
+$10 = (int *) 0xbffff00c
+(gdb) x/4tb 0xbffff00c
+0xbffff00c:	10010011	11000100	11111111	11111111
+(gdb) quit
+A debugging session is active.
+
+	Inferior 1 [process 12302] will be killed.
+
+Quit anyway? (y or n) y
+

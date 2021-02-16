@@ -1,0 +1,107 @@
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat signed_unsigned.c
+#include<stdio.h>
+
+int main() {
+
+	short int x = 15213;
+	short int y = -15213;
+	return 0;
+}
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb signed-unsigned
+GNU gdb (Ubuntu 7.11.1-0ubuntu1~16.04) 7.11.1
+Copyright (C) 2016 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "i686-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+<http://www.gnu.org/software/gdb/documentation/>.
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from signed-unsigned...done.
+(gdb) function main
+Undefined function command: "main".  Try "help function".
+(gdb) info functions
+All defined functions:
+
+File signed_unsigned.c:
+int main();
+
+Non-debugging symbols:
+0x0804828c  _init
+0x080482c0  __libc_start_main@plt
+0x080482e0  _start
+0x08048310  __x86.get_pc_thunk.bx
+0x08048320  deregister_tm_clones
+0x08048350  register_tm_clones
+0x08048390  __do_global_dtors_aux
+0x080483b0  frame_dummy
+0x08048400  __libc_csu_init
+0x08048460  __libc_csu_fini
+0x08048464  _fini
+(gdb) list 1
+1	#include<stdio.h>
+2	
+3	int main() {
+4	
+5		short int x = 15213;
+6		short int y = -15213;
+7		return 0;
+8	}
+(gdb) b 5
+Breakpoint 1 at 0x80483e1: file signed_unsigned.c, line 5.
+(gdb) r
+Starting program: /home/user/Documents/ENPM-691/C Programs/signed-unsigned 
+
+Breakpoint 1, main () at signed_unsigned.c:5
+5		short int x = 15213;
+(gdb) print x
+$1 = -12288
+(gdb) b 6
+Breakpoint 2 at 0x80483e7: file signed_unsigned.c, line 6.
+(gdb) c
+Continuing.
+
+Breakpoint 2, main () at signed_unsigned.c:6
+6		short int y = -15213;
+(gdb) print x
+$2 = 15213
+(gdb) print &x
+$3 = (short *) 0xbffff024
+(gdb) x/2xw 0xbffff024
+0xbffff024:	0xb7fb3b6d	0x00000000
+(gdb) x/2xb 0xbffff024
+0xbffff024:	0x6d	0x3b
+(gdb) print /x 15213
+$4 = 0x3b6d
+(gdb) x/2tb 0xbffff024
+0xbffff024:	01101101	00111011
+(gdb) b 7
+Breakpoint 3 at 0x80483ed: file signed_unsigned.c, line 7.
+(gdb) c
+Continuing.
+
+Breakpoint 3, main () at signed_unsigned.c:7
+7		return 0;
+(gdb) print y
+$5 = -15213
+(gdb) print &y
+$6 = (short *) 0xbffff026
+(gdb) x/2xb 0xbffff026
+0xbffff026:	0x93	0xc4
+(gdb) print /x -15213
+$7 = 0xffffc493
+(gdb) print /t 0xbffff026
+$8 = 10111111111111111111000000100110
+(gdb) x2tb 0xbffff026
+Undefined command: "x2tb".  Try "help".
+(gdb) x/2tb 0xbffff026
+0xbffff026:	10010011	11000100
+(gdb) x/2tb 0xbffff024
+0xbffff024:	01101101	00111011
+(gdb) 
+
