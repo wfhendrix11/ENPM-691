@@ -2,19 +2,18 @@
 
 Provided programs for ENPM 691 Hacking of C Programs and Unix Binaries at the University of Maryland.
 
-## Programs used in Lecture
+## Programs Demo'd
 
-### Lecture 1
-* No programs were referenced.
-
-### Lecture 2
+### 2/4
 * is_little_endian.c
 * sign_extension.c
 
-### Lecture 3
+### 2/11
 * sign_to_unsig.c
 * sign_extension.c
 * wraparound.c
+
+## Programs used in Lecture
 
 ## Linux Commands
 
