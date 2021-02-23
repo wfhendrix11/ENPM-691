@@ -13,8 +13,6 @@ Provided programs for ENPM 691 Hacking of C Programs and Unix Binaries at the Un
 * sign_extension.c
 * wraparound.c
 
-## Programs used in Lecture
-
 ## Linux Commands
 
 ### Compiling C Programs
