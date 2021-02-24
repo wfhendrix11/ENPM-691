@@ -39,7 +39,7 @@ Provided programs for ENPM 691 Hacking of C Programs and Unix Binaries at the Un
 | `c`     | Continue|
 | `exit` | Exit gdb |
 | `xb` | Shows Hex |
-| `xt` | Shows Binary |
+| `/t` | Shows Binary |
 | `x/4bt $2` | Examine (Read as "x-examine, 4-four, t-bytes, b-in binary") |
 | `x/1xw address`| Examine (Read as "x-examine, 1-one, w-word, x-in hex") |
 | `info registers` | Displays the currently set registers |
