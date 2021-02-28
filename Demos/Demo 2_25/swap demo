@@ -1,0 +1,81 @@
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat swap.c
+#include<stdio.h>
+
+void swap(int *x, int *y)
+{
+ 	int temp0 = *x;
+	int temp1 = *y;
+	*x = temp1;
+	*y = temp1;
+}
+
+int main()
+{
+	int a = 10;
+	int b = 15;
+	swap(&a, &b);
+}
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc swap.c -o swap -mpreferred-stack-boundary=2 -fno-stack-protector -ggdb
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb swap -q
+Reading symbols from swap...done.
+(gdb) info functions
+All defined functions:
+
+File swap.c:
+int main();
+void swap(int *, int *);
+
+Non-debugging symbols:
+0x0804828c  _init
+0x080482c0  __libc_start_main@plt
+0x080482e0  _start
+0x08048310  __x86.get_pc_thunk.bx
+0x08048320  deregister_tm_clones
+0x08048350  register_tm_clones
+0x08048390  __do_global_dtors_aux
+0x080483b0  frame_dummy
+0x08048430  __libc_csu_init
+0x08048490  __libc_csu_fini
+0x08048494  _fini
+(gdb) disass main
+Dump of assembler code for function main:
+   0x08048404 <+0>:	push   %ebp
+   0x08048405 <+1>:	mov    %esp,%ebp
+   0x08048407 <+3>:	sub    $0x8,%esp
+   0x0804840a <+6>:	movl   $0xa,-0x4(%ebp)
+   0x08048411 <+13>:	movl   $0xf,-0x8(%ebp)
+   0x08048418 <+20>:	lea    -0x8(%ebp),%eax
+   0x0804841b <+23>:	push   %eax
+   0x0804841c <+24>:	lea    -0x4(%ebp),%eax
+   0x0804841f <+27>:	push   %eax
+   0x08048420 <+28>:	call   0x80483db <swap>
+   0x08048425 <+33>:	add    $0x8,%esp
+   0x08048428 <+36>:	mov    $0x0,%eax
+   0x0804842d <+41>:	leave  
+   0x0804842e <+42>:	ret    
+End of assembler dump.
+(gdb) quit
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc swap.c -o swap -mpreferred-stack-boundary=2 -fno-stack-protector
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb swap -q
+Reading symbols from swap...(no debugging symbols found)...done.
+(gdb) list
+No symbol table is loaded.  Use the "file" command.
+(gdb) quit
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb exit -q
+Reading symbols from exit...done.
+(gdb) disass main
+Dump of assembler code for function main:
+   0x0804840b <+0>:	push   %ebp
+   0x0804840c <+1>:	mov    %esp,%ebp
+   0x0804840e <+3>:	sub    $0x4,%esp
+   0x08048411 <+6>:	movl   $0xa,-0x4(%ebp)
+   0x08048418 <+13>:	cmpl   $0xa,-0x4(%ebp)
+   0x0804841c <+17>:	jne    0x8048425 <main+26>
+   0x0804841e <+19>:	push   $0x0
+   0x08048420 <+21>:	call   0x80482e0 <exit@plt>
+   0x08048425 <+26>:	mov    $0x1,%eax
+   0x0804842a <+31>:	leave  
+   0x0804842b <+32>:	ret    
+End of assembler dump.
+(gdb) 
+

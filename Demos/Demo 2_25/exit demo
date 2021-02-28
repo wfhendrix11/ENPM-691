@@ -1,0 +1,130 @@
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat exit.c
+#include<stdio.h>
+#include<stdlib.h>
+
+int main()
+{
+	int a = 10;
+	if (a == 10)
+	{
+		exit(0);
+	}
+	return 0;
+}
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc exit.c -o exit -mpreferred-stack-boundary=2 -fno-stack-protector
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb exit -q
+Reading symbols from exit...(no debugging symbols found)...done.
+(gdb) info functions
+All defined functions:
+
+Non-debugging symbols:
+0x080482a8  _init
+0x080482e0  exit@plt
+0x080482f0  __libc_start_main@plt
+0x08048310  _start
+0x08048340  __x86.get_pc_thunk.bx
+0x08048350  deregister_tm_clones
+0x08048380  register_tm_clones
+0x080483c0  __do_global_dtors_aux
+0x080483e0  frame_dummy
+0x0804840b  main
+0x08048430  __libc_csu_init
+0x08048490  __libc_csu_fini
+0x08048494  _fini
+(gdb) disass main
+Dump of assembler code for function main:
+   0x0804840b <+0>:	push   %ebp
+   0x0804840c <+1>:	mov    %esp,%ebp
+   0x0804840e <+3>:	sub    $0x4,%esp
+   0x08048411 <+6>:	movl   $0xa,-0x4(%ebp)
+   0x08048418 <+13>:	cmpl   $0xa,-0x4(%ebp)
+   0x0804841c <+17>:	jne    0x8048425 <main+26>
+   0x0804841e <+19>:	push   $0x0
+   0x08048420 <+21>:	call   0x80482e0 <exit@plt>
+   0x08048425 <+26>:	mov    $0x0,%eax
+   0x0804842a <+31>:	leave  
+   0x0804842b <+32>:	ret    
+End of assembler dump.
+(gdb) quit
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat exit.c
+#include<stdio.h>
+#include<stdlib.h>
+
+int main()
+{
+	int a = 10;
+	if (a == 10)
+	{
+		exit(0);
+	}
+	return 0;
+}
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ ./exit
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ echo $?
+0
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ CHANGED RETURN TO 1
+CHANGED: command not found
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc exit.c -o exit -mpreferred-stack-boundary=2 -fno-stack-protector
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ ./exit
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ echo $?
+0
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ 
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc exit.c -o exit -mpreferred-stack-boundary=2 -fno-stack-protector -ggdb
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb exit -q
+Reading symbols from exit...done.
+(gdb) list 1
+1	#include<stdio.h>
+2	#include<stdlib.h>
+3	
+4	int main()
+5	{
+6		int a = 10;
+7		if (a == 10)
+8		{
+9			exit(0);
+10		}
+(gdb) disass main
+Dump of assembler code for function main:
+   0x0804840b <+0>:	push   %ebp
+   0x0804840c <+1>:	mov    %esp,%ebp
+   0x0804840e <+3>:	sub    $0x4,%esp
+   0x08048411 <+6>:	movl   $0xa,-0x4(%ebp)
+   0x08048418 <+13>:	cmpl   $0xa,-0x4(%ebp)
+   0x0804841c <+17>:	jne    0x8048425 <main+26>
+   0x0804841e <+19>:	push   $0x0
+   0x08048420 <+21>:	call   0x80482e0 <exit@plt>
+   0x08048425 <+26>:	mov    $0x1,%eax
+   0x0804842a <+31>:	leave  
+   0x0804842b <+32>:	ret    
+End of assembler dump.
+(gdb) break *0x08048411
+Breakpoint 1 at 0x8048411: file exit.c, line 6.
+(gdb) run
+Starting program: /home/user/Documents/ENPM-691/C Programs/exit 
+
+Breakpoint 1, main () at exit.c:6
+6		int a = 10;
+(gdb) x/li $eip
+=> 0x8048411 <main+6>:	movl   $0xa,-0x4(%ebp)
+(gdb) ni
+7		if (a == 10)
+(gdb) x/li $eip
+=> 0x8048418 <main+13>:	cmpl   $0xa,-0x4(%ebp)
+(gdb) ni
+0x0804841c	7		if (a == 10)
+(gdb) ni
+9			exit(0);
+(gdb) x/2i &eip
+No symbol "eip" in current context.
+(gdb) x/2i $eip
+=> 0x804841e <main+19>:	push   $0x0
+   0x8048420 <main+21>:	call   0x80482e0 <exit@plt>
+(gdb) ni
+0x08048420	9			exit(0);
+(gdb) x/i $eip
+=> 0x8048420 <main+21>:	call   0x80482e0 <exit@plt>
+(gdb) c
+Continuing.
+[Inferior 1 (process 8868) exited normally]
+(gdb) 
+
