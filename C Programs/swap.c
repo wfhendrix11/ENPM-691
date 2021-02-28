@@ -1,8 +1,16 @@
-void swap(int *xp, int *yp)
-{
-  int t0 = *xp;
-  int t1 = *yp;
+#include<stdio.h>
 
-  *xp = t1;
-  *yp = t0;
+void swap(int *x, int *y)
+{
+ 	int temp0 = *x;
+	int temp1 = *y;
+	*x = temp1;
+	*y = temp1;
+}
+
+int main()
+{
+	int a = 10;
+	int b = 15;
+	swap(&a, &b);
 }
