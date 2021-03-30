@@ -1,0 +1,86 @@
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat switch_eg.c
+long switch_eg
+   (long x, long y, long z)
+{
+    long w = 1;
+    switch(x) {
+      case 1:
+           w = y * z;
+           break;
+      case 2:
+           w = y/z;
+ 	   /* Fall Through */
+       case 3:
+           w += z;
+           break;
+       case 5:
+       case 6:
+            w -= z;
+            break;
+       default:
+            w = 2; 
+    }
+     
+    return w;
+}
+
+int main()
+{
+   switch_eg(2, 8, 9);
+   return 0;
+}
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc switch_eg.c -o switch_eg -mpreferred-stack-boundary=2 -fno-stack-protector -ggdb
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb switch_eg -q
+Reading symbols from switch_eg...done.
+(gdb) disass switch_eg
+Dump of assembler code for function switch_eg:
+   0x080483db <+0>:	push   %ebp
+   0x080483dc <+1>:	mov    %esp,%ebp
+   0x080483de <+3>:	sub    $0x4,%esp
+   0x080483e1 <+6>:	movl   $0x1,-0x4(%ebp)
+   0x080483e8 <+13>:	cmpl   $0x6,0x8(%ebp)
+   0x080483ec <+17>:	ja     0x8048423 <switch_eg+72>
+   0x080483ee <+19>:	mov    0x8(%ebp),%eax
+   0x080483f1 <+22>:	shl    $0x2,%eax
+   0x080483f4 <+25>:	add    $0x80484d0,%eax
+   0x080483f9 <+30>:	mov    (%eax),%eax
+   0x080483fb <+32>:	jmp    *%eax
+   0x080483fd <+34>:	mov    0xc(%ebp),%eax
+   0x08048400 <+37>:	imul   0x10(%ebp),%eax
+   0x08048404 <+41>:	mov    %eax,-0x4(%ebp)
+   0x08048407 <+44>:	jmp    0x804842a <switch_eg+79>
+   0x08048409 <+46>:	mov    0xc(%ebp),%eax
+   0x0804840c <+49>:	cltd   
+   0x0804840d <+50>:	idivl  0x10(%ebp)
+   0x08048410 <+53>:	mov    %eax,-0x4(%ebp)
+   0x08048413 <+56>:	mov    0x10(%ebp),%eax
+   0x08048416 <+59>:	add    %eax,-0x4(%ebp)
+   0x08048419 <+62>:	jmp    0x804842a <switch_eg+79>
+   0x0804841b <+64>:	mov    0x10(%ebp),%eax
+   0x0804841e <+67>:	sub    %eax,-0x4(%ebp)
+   0x08048421 <+70>:	jmp    0x804842a <switch_eg+79>
+   0x08048423 <+72>:	movl   $0x2,-0x4(%ebp)
+   0x0804842a <+79>:	mov    -0x4(%ebp),%eax
+   0x0804842d <+82>:	leave  
+   0x0804842e <+83>:	ret    
+End of assembler dump.
+(gdb) x/8w 0x80484d0
+0x80484d0:	134513699	134513661	134513673	134513683
+0x80484e0:	134513699	134513691	134513691	990059265
+(gdb) b *0x80484d0
+Breakpoint 1 at 0x80484d0
+(gdb) b * 0x080483f9
+Breakpoint 2 at 0x80483f9: file switch_eg.c, line 5.
+(gdb) run
+Starting program: /home/user/Documents/ENPM-691/C Programs/switch_eg 
+
+Breakpoint 2, 0x080483f9 in switch_eg (x=2, y=8, z=9) at switch_eg.c:5
+5	    switch(x) {
+(gdb) ni
+0x080483fb	5	    switch(x) {
+(gdb) print $eax
+$1 = 134513673
+(gdb) print /x $eax
+$2 = 0x8048409
+(gdb) 
+

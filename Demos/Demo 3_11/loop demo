@@ -1,0 +1,89 @@
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat loop.c
+#include<stdio.h>
+
+int main() 
+{
+	int i = 0;
+	for (i = 0; i<10; i++) {
+		printf("Hello ");
+	}
+	return 0;
+}
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc loop.c -o loop -ggdb
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb loop -q
+Reading symbols from loop...done.
+(gdb) list
+1	#include<stdio.h>
+2	
+3	int main() 
+4	{
+5		int i = 0;
+6		for (i = 0; i<10; i++) {
+7			printf("Hello ");
+8		}
+9		return 0;
+10	}
+(gdb) diass main
+Undefined command: "diass".  Try "help".
+(gdb) disass main
+Dump of assembler code for function main:
+   0x0804840b <+0>:	push   %ebp
+   0x0804840c <+1>:	mov    %esp,%ebp
+   0x0804840e <+3>:	sub    $0x4,%esp
+   0x08048411 <+6>:	movl   $0x0,-0x4(%ebp)
+   0x08048418 <+13>:	movl   $0x0,-0x4(%ebp)
+   0x0804841f <+20>:	jmp    0x8048432 <main+39>
+   0x08048421 <+22>:	push   $0x80484c0
+   0x08048426 <+27>:	call   0x80482e0 <printf@plt>
+   0x0804842b <+32>:	add    $0x4,%esp
+   0x0804842e <+35>:	addl   $0x1,-0x4(%ebp)
+   0x08048432 <+39>:	cmpl   $0x9,-0x4(%ebp)
+   0x08048436 <+43>:	jle    0x8048421 <main+22>
+   0x08048438 <+45>:	mov    $0x0,%eax
+   0x0804843d <+50>:	leave  
+   0x0804843e <+51>:	ret  
+End of assembler dump.
+(gdb) x/s 0x80484e0
+0x80484e0:	"Hello "
+(gdb) quit
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat loop_2.c
+#include<stdio.h>
+
+int main() 
+{
+	int i = 0;
+	for (; i<10; i++) {
+		//printf("Hello ");
+	}
+	return i;
+}
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc loop_2.c -o loop -mpreferred-stack-boundary=2 -fno-stack-protector -ggdb
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb loop -q
+Reading symbols from loop...done.
+(gdb) list
+1	#include<stdio.h>
+2	
+3	int main() 
+4	{
+5		int i = 0;
+6		for (; i<10; i++) {
+7			//printf("Hello ");
+8		}
+9		return i;
+10	}
+(gdb) disass main
+Dump of assembler code for function main:
+   0x080483db <+0>:	push   %ebp
+   0x080483dc <+1>:	mov    %esp,%ebp
+   0x080483de <+3>:	sub    $0x4,%esp
+   0x080483e1 <+6>:	movl   $0x0,-0x4(%ebp)
+   0x080483e8 <+13>:	jmp    0x80483ee <main+19>
+   0x080483ea <+15>:	addl   $0x1,-0x4(%ebp)
+   0x080483ee <+19>:	cmpl   $0x9,-0x4(%ebp)
+   0x080483f2 <+23>:	jle    0x80483ea <main+15>
+   0x080483f4 <+25>:	mov    -0x4(%ebp),%eax
+   0x080483f7 <+28>:	leave  
+   0x080483f8 <+29>:	ret    
+End of assembler dump.
+(gdb) quit
+

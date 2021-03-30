@@ -1,0 +1,335 @@
+eg -mpreferred-stack-boundary=2 -fno-stack-protector -ggdb
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb switch_eg -q
+Reading symbols from switch_eg...done.
+(gdb) disass switch_eg
+Dump of assembler code for function switch_eg:
+   0x080483db <+0>:	push   %ebp
+   0x080483dc <+1>:	mov    %esp,%ebp
+   0x080483de <+3>:	sub    $0x4,%esp
+   0x080483e1 <+6>:	movl   $0x1,-0x4(%ebp)
+   0x080483e8 <+13>:	cmpl   $0x6,0x8(%ebp)
+   0x080483ec <+17>:	ja     0x8048423 <switch_eg+72>
+   0x080483ee <+19>:	mov    0x8(%ebp),%eax
+   0x080483f1 <+22>:	shl    $0x2,%eax
+   0x080483f4 <+25>:	add    $0x80484d0,%eax
+   0x080483f9 <+30>:	mov    (%eax),%eax
+   0x080483fb <+32>:	jmp    *%eax
+   0x080483fd <+34>:	mov    0xc(%ebp),%eax
+   0x08048400 <+37>:	imul   0x10(%ebp),%eax
+   0x08048404 <+41>:	mov    %eax,-0x4(%ebp)
+   0x08048407 <+44>:	jmp    0x804842a <switch_eg+79>
+   0x08048409 <+46>:	mov    0xc(%ebp),%eax
+   0x0804840c <+49>:	cltd   
+   0x0804840d <+50>:	idivl  0x10(%ebp)
+   0x08048410 <+53>:	mov    %eax,-0x4(%ebp)
+   0x08048413 <+56>:	mov    0x10(%ebp),%eax
+   0x08048416 <+59>:	add    %eax,-0x4(%ebp)
+   0x08048419 <+62>:	jmp    0x804842a <switch_eg+79>
+   0x0804841b <+64>:	mov    0x10(%ebp),%eax
+   0x0804841e <+67>:	sub    %eax,-0x4(%ebp)
+   0x08048421 <+70>:	jmp    0x804842a <switch_eg+79>
+   0x08048423 <+72>:	movl   $0x2,-0x4(%ebp)
+   0x0804842a <+79>:	mov    -0x4(%ebp),%eax
+   0x0804842d <+82>:	leave  
+   0x0804842e <+83>:	ret    
+End of assembler dump.
+(gdb) x/8w 0x80484d0
+0x80484d0:	134513699	134513661	134513673	134513683
+0x80484e0:	134513699	134513691	134513691	990059265
+(gdb) b *0x80484d0
+Breakpoint 1 at 0x80484d0
+(gdb) b * 0x080483f9
+Breakpoint 2 at 0x80483f9: file switch_eg.c, line 5.
+(gdb) run
+Starting program: /home/user/Documents/ENPM-691/C Programs/switch_eg 
+
+Breakpoint 2, 0x080483f9 in switch_eg (x=2, y=8, z=9) at switch_eg.c:5
+5	    switch(x) {
+(gdb) ni
+0x080483fb	5	    switch(x) {
+(gdb) print $eax
+$1 = 134513673
+(gdb) print /x $eax
+$2 = 0x8048409
+(gdb) quit
+A debugging session is active.
+
+	Inferior 1 [process 2651] will be killed.
+
+Quit anyway? (y or n) y
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ clear
+
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat test_buff.c
+/* This program is used for demonstrating how to corrupt the return address */
+
+#include <stdio.h>
+
+void Test()
+{
+  char buff[4];
+  gets(buff);
+  puts(buff); 
+}
+
+int main()
+{
+  Test();
+  return 0;
+}
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc test_buff.c -o test_buff -mpreferred-stack-boundary=2 -fno-stack-protector -g
+test_buff.c: In function ‘Test’:
+test_buff.c:8:3: warning: implicit declaration of function ‘gets’ [-Wimplicit-function-declaration]
+   gets(buff);
+   ^
+/tmp/ccUov7Q6.o: In function `Test':
+/home/user/Documents/ENPM-691/C Programs/test_buff.c:8: warning: the `gets' function is dangerous and should not be used.
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ ./test_buff
+enpm
+enpm
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb test_buff -q
+Reading symbols from test_buff...done.
+(gdb) list 1
+1	/* This program is used for demonstrating how to corrupt the return address */
+2	
+3	#include <stdio.h>
+4	
+5	void Test()
+6	{
+7	  char buff[4];
+8	  gets(buff);
+9	  puts(buff); 
+10	}
+(gdb) disass main
+Dump of assembler code for function main:
+   0x0804845c <+0>:	push   %ebp
+   0x0804845d <+1>:	mov    %esp,%ebp
+   0x0804845f <+3>:	call   0x804843b <Test>
+   0x08048464 <+8>:	mov    $0x0,%eax
+   0x08048469 <+13>:	pop    %ebp
+   0x0804846a <+14>:	ret    
+End of assembler dump.
+(gdb) disass Test
+Dump of assembler code for function Test:
+   0x0804843b <+0>:	push   %ebp
+   0x0804843c <+1>:	mov    %esp,%ebp
+   0x0804843e <+3>:	sub    $0x4,%esp
+   0x08048441 <+6>:	lea    -0x4(%ebp),%eax
+   0x08048444 <+9>:	push   %eax
+   0x08048445 <+10>:	call   0x8048300 <gets@plt>
+   0x0804844a <+15>:	add    $0x4,%esp
+   0x0804844d <+18>:	lea    -0x4(%ebp),%eax
+   0x08048450 <+21>:	push   %eax
+   0x08048451 <+22>:	call   0x8048310 <puts@plt>
+   0x08048456 <+27>:	add    $0x4,%esp
+   0x08048459 <+30>:	nop
+   0x0804845a <+31>:	leave  
+   0x0804845b <+32>:	ret    
+End of assembler dump.
+(gdb) b *0x08048445 
+Breakpoint 1 at 0x8048445: file test_buff.c, line 8.
+(gdb) b *0x08048451 
+Breakpoint 2 at 0x8048451: file test_buff.c, line 9.
+(gdb) b *0x0804845b
+Breakpoint 3 at 0x804845b: file test_buff.c, line 10.
+(gdb) run
+Starting program: /home/user/Documents/ENPM-691/C Programs/test_buff 
+
+Breakpoint 1, 0x08048445 in Test () at test_buff.c:8
+8	  gets(buff);
+(gdb) c
+Continuing.
+enpm
+
+Breakpoint 2, 0x08048451 in Test () at test_buff.c:9
+9	  puts(buff); 
+(gdb) x/5xw $esp
+0xbffff008:	0xbffff00c	0x6d706e65	0xbffff000	0x08048464
+0xbffff018:	0x00000000
+(gdb) x/1xw $ebp
+0xbffff010:	0xbffff000
+(gdb) c
+Continuing.
+enpm
+
+Breakpoint 3, 0x0804845b in Test () at test_buff.c:10
+10	}
+(gdb) x/5xw $esp
+0xbffff014:	0x08048464	0x00000000	0xb7e23647	0x00000001
+0xbffff024:	0xbffff0b4
+(gdb) x/5i 0x08048464
+   0x8048464 <main+8>:	mov    $0x0,%eax
+   0x8048469 <main+13>:	pop    %ebp
+   0x804846a <main+14>:	ret    
+   0x804846b:	xchg   %ax,%ax
+   0x804846d:	xchg   %ax,%ax
+(gdb) kill
+Kill the program being debugged? (y or n) run
+Please answer y or n.
+Kill the program being debugged? (y or n) c
+Please answer y or n.
+Kill the program being debugged? (y or n) y
+(gdb) run
+Starting program: /home/user/Documents/ENPM-691/C Programs/test_buff 
+
+Breakpoint 1, 0x08048445 in Test () at test_buff.c:8
+8	  gets(buff);
+(gdb) c
+Continuing.
+enpmenpmenpm
+
+Breakpoint 2, 0x08048451 in Test () at test_buff.c:9
+9	  puts(buff); 
+(gdb) c
+Continuing.
+enpmenpmenpm
+
+Breakpoint 3, 0x0804845b in Test () at test_buff.c:10
+10	}
+(gdb) x/5xw $esp
+0xbffff014:	0x6d706e65	0x00000000	0xb7e23647	0x00000001
+0xbffff024:	0xbffff0b4
+(gdb) x/5i 0x6d706e65
+   0x6d706e65:	Cannot access memory at address 0x6d706e65
+(gdb) list 1
+
+1	/* This program is used for demonstrating how to corrupt the return address */
+2	
+3	#include <stdio.h>
+4	
+5	void Test()
+6	{
+7	  char buff[4];
+8	  gets(buff);
+9	  puts(buff); 
+10	}
+(gdb) disass Test
+Dump of assembler code for function Test:
+   0x0804843b <+0>:	push   %ebp
+   0x0804843c <+1>:	mov    %esp,%ebp
+   0x0804843e <+3>:	sub    $0x4,%esp
+   0x08048441 <+6>:	lea    -0x4(%ebp),%eax
+   0x08048444 <+9>:	push   %eax
+   0x08048445 <+10>:	call   0x8048300 <gets@plt>
+   0x0804844a <+15>:	add    $0x4,%esp
+   0x0804844d <+18>:	lea    -0x4(%ebp),%eax
+   0x08048450 <+21>:	push   %eax
+   0x08048451 <+22>:	call   0x8048310 <puts@plt>
+   0x08048456 <+27>:	add    $0x4,%esp
+   0x08048459 <+30>:	nop
+   0x0804845a <+31>:	leave  
+=> 0x0804845b <+32>:	ret    
+End of assembler dump.
+(gdb) disass main
+Dump of assembler code for function main:
+   0x0804845c <+0>:	push   %ebp
+   0x0804845d <+1>:	mov    %esp,%ebp
+   0x0804845f <+3>:	call   0x804843b <Test>
+   0x08048464 <+8>:	mov    $0x0,%eax
+   0x08048469 <+13>:	pop    %ebp
+   0x0804846a <+14>:	ret    
+End of assembler dump.
+(gdb) quit
+A debugging session is active.
+
+	Inferior 1 [process 2855] will be killed.
+
+Quit anyway? (y or n) y
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc test_buff1.c -o test_buff1 -mpreferred-stack-boundary=2 -fno-stack-protector -g
+gcc: error: test_buff1.c: No such file or directory
+gcc: fatal error: no input files
+compilation terminated.
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc test_buff1.c -o test_buff1 -mpreferred-stack-boundary=2 -fno-stack-protector -g
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb test_buff1 -qReading symbols from test_buff1...done.
+(gdb) disass main
+Dump of assembler code for function main:
+   0x080483e1 <+0>:	push   %ebp
+   0x080483e2 <+1>:	mov    %esp,%ebp
+   0x080483e4 <+3>:	call   0x80483db <Test>
+   0x080483e9 <+8>:	mov    $0x0,%eax
+   0x080483ee <+13>:	pop    %ebp
+   0x080483ef <+14>:	ret    
+End of assembler dump.
+(gdb) disass Test
+Dump of assembler code for function Test:
+   0x080483db <+0>:	push   %ebp
+   0x080483dc <+1>:	mov    %esp,%ebp
+   0x080483de <+3>:	nop
+   0x080483df <+4>:	pop    %ebp
+   0x080483e0 <+5>:	ret    
+End of assembler dump.
+(gdb) b *0x080483e1
+Breakpoint 1 at 0x80483e1: file test_buff1.c, line 11.
+(gdb) x/1xw $esp
+No registers.
+(gdb) run
+Starting program: /home/user/Documents/ENPM-691/C Programs/test_buff1 
+
+Breakpoint 1, main () at test_buff1.c:11
+11	{
+(gdb) x/1xw $esp
+0xbffff01c:	0xb7e23647
+(gdb) ni
+0x080483e2	11	{
+(gdb) x/2xw $esp
+0xbffff018:	0x00000000	0xb7e23647
+(gdb) ni
+12	  Test();
+(gdb) x/2xw $esp
+0xbffff018:	0x00000000	0xb7e23647
+(gdb) ni
+13	  return 0;
+(gdb) kill
+Kill the program being debugged? (y or n) y
+(gdb) run
+Starting program: /home/user/Documents/ENPM-691/C Programs/test_buff1 
+
+Breakpoint 1, main () at test_buff1.c:11
+11	{
+(gdb) x/1xw $esp
+0xbffff01c:	0xb7e23647
+(gdb) si
+0x080483e2	11	{
+(gdb) x/2xw $esp
+0xbffff018:	0x00000000	0xb7e23647
+(gdb) si
+12	  Test();
+(gdb) x/2xw $esp
+0xbffff018:	0x00000000	0xb7e23647
+(gdb) si
+Test () at test_buff1.c:6
+6	{
+(gdb) x/3xw $esp
+0xbffff014:	0x080483e9	0x00000000	0xb7e23647
+(gdb) si
+0x080483dc	6	{
+(gdb) x/4xw $esp
+0xbffff010:	0xbffff018	0x080483e9	0x00000000	0xb7e23647
+(gdb) si
+8	}
+(gdb) x/4xw $esp
+0xbffff010:	0xbffff018	0x080483e9	0x00000000	0xb7e23647
+(gdb) si
+0x080483df	8	}
+(gdb) x/3xw $esp
+0xbffff010:	0xbffff018	0x080483e9	0x00000000
+(gdb) x/1xw $ebp
+0xbffff010:	0xbffff018
+(gdb) si
+0x080483e0	8	}
+(gdb) x/1xw $ebp
+0xbffff018:	0x00000000
+(gdb) si
+main () at test_buff1.c:13
+13	  return 0;
+(gdb) x/2xw $esp
+0xbffff018:	0x00000000	0xb7e23647
+(gdb) disass Test
+Dump of assembler code for function Test:
+   0x080483db <+0>:	push   %ebp
+   0x080483dc <+1>:	mov    %esp,%ebp
+   0x080483de <+3>:	nop
+   0x080483df <+4>:	pop    %ebp
+   0x080483e0 <+5>:	ret    
+End of assembler dump.
+(gdb) 
+
