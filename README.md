@@ -31,6 +31,7 @@ Provided programs for ENPM 691 Hacking of C Programs and Unix Binaries at the Un
 ### Compiling C Programs
 
   `gcc fileName.c -o file-name`
+  `gcc fileName.c -o file-name -mpreferred-stack-boundary=2 -fno-stack-protector -g`
 
 ### Running C Programs
 
