@@ -13,6 +13,19 @@ Provided programs for ENPM 691 Hacking of C Programs and Unix Binaries at the Un
 * sign_extension.c
 * wraparound.c
 
+### 2/25
+* add.c
+* exit.c
+* swap.c
+
+### 3/11
+* loop.c
+* switch_eg.c
+
+### 3/25
+* test_buff.c
+* test_buff1.c
+
 ## Linux Commands
 
 ### Compiling C Programs
