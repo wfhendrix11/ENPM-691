@@ -1,0 +1,49 @@
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc array.c -o array -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack -g
+array.c: In function ‘main’:
+array.c:8:15: error: ‘array’ undeclared (first use in this function)
+  printf("%d", array[7]);
+               ^
+array.c:8:15: note: each undeclared identifier is reported only once for each function it appears in
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc array.c -o array -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack -g
+array.c: In function ‘main’:
+array.c:8:14: error: ‘array’ undeclared (first use in this function)
+  printf("%d",array[7]);
+              ^
+array.c:8:14: note: each undeclared identifier is reported only once for each function it appears in
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc array.c -o array -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack -g
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb array -q
+Reading symbols from array...done.
+(gdb) list 1
+1	#include<stdio.h>
+2	
+3	int main()
+4	{
+5		int arr[10];
+6		arr[4] = 10;
+7		arr[7] = 20;
+8		printf("%d",arr[7]);
+9		return 0;
+10	}
+(gdb) 
+Line number 11 out of range; array.c has 10 lines.
+(gdb) disass main
+Dump of assembler code for function main:
+   0x0804840b <+0>:	push   %ebp
+   0x0804840c <+1>:	mov    %esp,%ebp
+   0x0804840e <+3>:	sub    $0x28,%esp
+   0x08048411 <+6>:	movl   $0xa,-0x18(%ebp)
+   0x08048418 <+13>:	movl   $0x14,-0xc(%ebp)
+   0x0804841f <+20>:	mov    -0xc(%ebp),%eax
+   0x08048422 <+23>:	push   %eax
+   0x08048423 <+24>:	push   $0x80484c0
+   0x08048428 <+29>:	call   0x80482e0 <printf@plt>
+   0x0804842d <+34>:	add    $0x8,%esp
+   0x08048430 <+37>:	mov    $0x0,%eax
+   0x08048435 <+42>:	leave  
+   0x08048436 <+43>:	ret    
+End of assembler dump.
+(gdb) print /d 0x28
+$1 = 40
+(gdb) print /d 0x18
+$2 = 24
+(gdb) quit

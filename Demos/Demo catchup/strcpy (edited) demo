@@ -1,0 +1,127 @@
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat strcpy.c
+#include<stdio.h>
+#include<string.h>
+
+void getdata(char* str) 
+{
+	char buffer[100];
+	strcpy(buffer, str);
+	puts(buffer);
+}
+
+int main(int argc, char** argv) 
+{
+	getdata(argv[1]);
+	return 0;
+}
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc strcpy.c -o strcpy -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack -g
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb strcpy -q
+Reading symbols from strcpy...done.
+(gdb) disass main
+Dump of assembler code for function main:
+   0x0804845f <+0>:	push   %ebp
+   0x08048460 <+1>:	mov    %esp,%ebp
+   0x08048462 <+3>:	mov    0xc(%ebp),%eax
+   0x08048465 <+6>:	add    $0x4,%eax
+   0x08048468 <+9>:	mov    (%eax),%eax
+   0x0804846a <+11>:	push   %eax
+   0x0804846b <+12>:	call   0x804843b <getdata>
+   0x08048470 <+17>:	add    $0x4,%esp
+   0x08048473 <+20>:	mov    $0x0,%eax
+   0x08048478 <+25>:	leave  
+   0x08048479 <+26>:	ret    
+End of assembler dump.
+(gdb) disass getdata
+Dump of assembler code for function getdata:
+   0x0804843b <+0>:	push   %ebp
+   0x0804843c <+1>:	mov    %esp,%ebp
+   0x0804843e <+3>:	sub    $0x64,%esp
+   0x08048441 <+6>:	pushl  0x8(%ebp)
+   0x08048444 <+9>:	lea    -0x64(%ebp),%eax
+   0x08048447 <+12>:	push   %eax
+   0x08048448 <+13>:	call   0x8048300 <strcpy@plt>
+   0x0804844d <+18>:	add    $0x8,%esp
+   0x08048450 <+21>:	lea    -0x64(%ebp),%eax
+   0x08048453 <+24>:	push   %eax
+   0x08048454 <+25>:	call   0x8048310 <puts@plt>
+   0x08048459 <+30>:	add    $0x4,%esp
+   0x0804845c <+33>:	nop
+   0x0804845d <+34>:	leave  
+   0x0804845e <+35>:	ret    
+End of assembler dump.
+(gdb) list 1
+1	#include<stdio.h>
+2	#include<string.h>
+3	
+4	void getdata(char* str) 
+5	{
+6		char buffer[100];
+7		strcpy(buffer, str);
+8		puts(buffer);
+9	}
+10	
+(gdb) print /d 0x64
+$1 = 100
+(gdb) quit
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ EDIT STRCPY 
+EDIT: command not found
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat strcpy.c#include<stdio.h>
+#include<string.h>
+
+void getdata(char* str) 
+{
+	int a = 10;
+	int b = 20;
+	short c = 30;
+	char buffer[100];
+	strcpy(buffer, str);
+	puts(buffer);
+}
+
+int main(int argc, char** argv) 
+{
+	getdata(argv[1]);
+	return 0;
+}
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc strcpy.c -o strcpy -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack -g
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb strcpy -qReading symbols from strcpy...done.
+(gdb) disass getdata
+Dump of assembler code for function getdata:
+   0x0804843b <+0>:	push   %ebp
+   0x0804843c <+1>:	mov    %esp,%ebp
+   0x0804843e <+3>:	sub    $0x70,%esp
+   0x08048441 <+6>:	movl   $0xa,-0x4(%ebp)
+   0x08048448 <+13>:	movl   $0x14,-0x8(%ebp)
+   0x0804844f <+20>:	movw   $0x1e,-0xa(%ebp)
+   0x08048455 <+26>:	pushl  0x8(%ebp)
+   0x08048458 <+29>:	lea    -0x6e(%ebp),%eax
+   0x0804845b <+32>:	push   %eax
+   0x0804845c <+33>:	call   0x8048300 <strcpy@plt>
+   0x08048461 <+38>:	add    $0x8,%esp
+   0x08048464 <+41>:	lea    -0x6e(%ebp),%eax
+   0x08048467 <+44>:	push   %eax
+   0x08048468 <+45>:	call   0x8048310 <puts@plt>
+   0x0804846d <+50>:	add    $0x4,%esp
+   0x08048470 <+53>:	nop
+   0x08048471 <+54>:	leave  
+   0x08048472 <+55>:	ret    
+End of assembler dump.
+(gdb) list 1
+1	#include<stdio.h>
+2	#include<string.h>
+3	
+4	void getdata(char* str) 
+5	{
+6		int a = 10;
+7		int b = 20;
+8		short c = 30;
+9		char buffer[100];
+10		strcpy(buffer, str);
+(gdb) print /c 0x6e
+$1 = 110 'n'
+(gdb) print /d 0x6e
+$2 = 110
+(gdb) print /d 0x70
+$3 = 112
+(gdb) quit
+

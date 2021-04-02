@@ -1,0 +1,127 @@
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat strcpy.c
+#include<stdio.h>
+#include<string.h>
+
+void getdata(char* str) 
+{
+	char buffer[100];
+	strcpy(buffer, str);
+	puts(buffer);
+}
+
+int main(int argc, char** argv) 
+{
+	getdata(argv[1]);
+	return 0;
+}
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc strcpy.c -o strcpy -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ ./strcpy ENPM691
+ENPM691
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ ./strcpy ENPM 691
+ENPM
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ python -c 'print("A"*100)'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ ./strcpy AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+Segmentation fault (core dumped)
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb strcpy -q
+Reading symbols from strcpy...(no debugging symbols found)...done.
+(gdb) info functions
+All defined functions:
+
+Non-debugging symbols:
+0x080482cc  _init
+0x08048300  strcpy@plt
+0x08048310  puts@plt
+0x08048320  __libc_start_main@plt
+0x08048340  _start
+0x08048370  __x86.get_pc_thunk.bx
+0x08048380  deregister_tm_clones
+0x080483b0  register_tm_clones
+0x080483f0  __do_global_dtors_aux
+0x08048410  frame_dummy
+0x0804843b  getdata
+0x0804845f  main
+0x08048480  __libc_csu_init
+0x080484e0  __libc_csu_fini
+0x080484e4  _fini
+(gdb) disass main
+Dump of assembler code for function main:
+   0x0804845f <+0>:	push   %ebp
+   0x08048460 <+1>:	mov    %esp,%ebp
+   0x08048462 <+3>:	mov    0xc(%ebp),%eax
+   0x08048465 <+6>:	add    $0x4,%eax
+   0x08048468 <+9>:	mov    (%eax),%eax
+   0x0804846a <+11>:	push   %eax
+   0x0804846b <+12>:	call   0x804843b <getdata>
+   0x08048470 <+17>:	add    $0x4,%esp
+   0x08048473 <+20>:	mov    $0x0,%eax
+   0x08048478 <+25>:	leave  
+   0x08048479 <+26>:	ret    
+End of assembler dump.
+(gdb) list 1
+No symbol table is loaded.  Use the "file" command.
+(gdb) list 1
+No symbol table is loaded.  Use the "file" command.
+(gdb) quit
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc strcpy.c -o strcpy -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack -g
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb strcpy -qReading symbols from strcpy...done.
+(gdb) list 1
+1	#include<stdio.h>
+2	#include<string.h>
+3	
+4	void getdata(char* str) 
+5	{
+6		char buffer[100];
+7		strcpy(buffer, str);
+8		puts(buffer);
+9	}
+10	
+(gdb) 
+11	int main(int argc, char** argv) 
+12	{
+13		getdata(argv[1]);
+14		return 0;
+15	}
+(gdb) break *0x08048462
+Breakpoint 1 at 0x8048462: file strcpy.c, line 13.
+(gdb) run ENPM
+Starting program: /home/user/Documents/ENPM-691/C Programs/strcpy ENPM
+
+Breakpoint 1, main (argc=2, argv=0xbffff0b4) at strcpy.c:13
+13		getdata(argv[1]);
+(gdb) x/1xw $ebp+0xc
+0xbffff024:	0xbffff0b4
+(gdb) x/s 0xbffff0b4
+0xbffff0b4:	"\200\362\377\277\260\362\377\277"
+(gdb) x/1xw 0xbffff0b4
+0xbffff0b4:	0xbffff280
+(gdb) x/s 0xbffff28d
+0xbffff28d:	"cuments/ENPM-691/C Programs/strcpy"
+(gdb) si
+0x08048465	13		getdata(argv[1]);
+(gdb) x/1xw $eax
+0xbffff0b4:	0xbffff280
+(gdb) print $eax
+$1 = -1073745740
+(gdb) print /x $eax
+$2 = 0xbffff0b4
+(gdb) si
+0x08048468	13		getdata(argv[1]);
+(gdb) x/1xw $eax
+0xbffff0b8:	0xbffff2b0
+(gdb) x/s 0xbffff2b0
+0xbffff2b0:	"ENPM"
+(gdb) si
+0x0804846a	13		getdata(argv[1]);
+(gdb) print /x $eax
+$3 = 0xbffff2b0
+(gdb) x/s 0xbffff2b0
+0xbffff2b0:	"ENPM"
+(gdb) quit
+A debugging session is active.
+
+	Inferior 1 [process 16370] will be killed.
+
+Quit anyway? (y or n) y
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ 
+
