@@ -12,7 +12,7 @@ int encode(int a, int b, int c, int d) {
 	int y = a - d;
 	int z = x >> 31;
 
-	return z ^ y;
+	return x ^ y;
 }
 
 
@@ -28,6 +28,7 @@ int encode(int a, int b, int c, int d) {
    0x0804840c <+23>:	mov    %eax,-0x8(%ebp)
    0x0804840f <+26>:	mov    -0x4(%ebp),%eax
    0x08048412 <+29>:	sar    $0x1f,%eax
+
    0x08048415 <+32>:	mov    %eax,-0xc(%ebp)
    0x08048418 <+35>:	mov    -0x4(%ebp),%eax
    0x0804841b <+38>:	xor    -0xc(%ebp),%eax 
@@ -44,6 +45,7 @@ int encode(int a, int b, int c, int d) {
    0x0804840c <+23>:	mov    %eax,-0x8(%ebp)
    0x0804840f <+26>:	mov    -0x4(%ebp),%eax
    0x08048412 <+29>:	sar    $0x1f,%eax
+
    0x08048415 <+32>:	mov    %eax,-0xc(%ebp)
    0x08048418 <+35>:	mov    -0xc(%ebp),%eax
    0x0804841b <+38>:	xor    -0x8(%ebp),%eax    
