@@ -19,9 +19,6 @@ int encode(int a, int b, int c, int d) {
 // x ^ z
 
 /*
-   0x080483f5 <+0>:	push   %ebp
-   0x080483f6 <+1>:	mov    %esp,%ebp
-   0x080483f8 <+3>:	sub    $0xc,%esp
    0x080483fb <+6>:	mov    0xc(%ebp),%edx
    0x080483fe <+9>:	mov    0x10(%ebp),%eax
    0x08048401 <+12>:	add    %edx,%eax
@@ -33,16 +30,11 @@ int encode(int a, int b, int c, int d) {
    0x08048412 <+29>:	sar    $0x1f,%eax
    0x08048415 <+32>:	mov    %eax,-0xc(%ebp)
    0x08048418 <+35>:	mov    -0x4(%ebp),%eax
-   0x0804841b <+38>:	xor    -0xc(%ebp),%eax
-   0x0804841e <+41>:	leave  
-   0x0804841f <+42>:	ret  
+   0x0804841b <+38>:	xor    -0xc(%ebp),%eax 
 
 // z ^ y
 
 /*
-   0x080483f5 <+0>:	push   %ebp
-   0x080483f6 <+1>:	mov    %esp,%ebp
-   0x080483f8 <+3>:	sub    $0xc,%esp
    0x080483fb <+6>:	mov    0xc(%ebp),%edx
    0x080483fe <+9>:	mov    0x10(%ebp),%eax
    0x08048401 <+12>:	add    %edx,%eax
@@ -54,9 +46,7 @@ int encode(int a, int b, int c, int d) {
    0x08048412 <+29>:	sar    $0x1f,%eax
    0x08048415 <+32>:	mov    %eax,-0xc(%ebp)
    0x08048418 <+35>:	mov    -0xc(%ebp),%eax
-   0x0804841b <+38>:	xor    -0x8(%ebp),%eax
-   0x0804841e <+41>:	leave  
-   0x0804841f <+42>:	ret     
+   0x0804841b <+38>:	xor    -0x8(%ebp),%eax    
 */
 
 
