@@ -4,28 +4,6 @@ Provided programs for ENPM 691 Hacking of C Programs and Unix Binaries at the Un
 
 ## Programs Demo'd
 
-### 2/4
-* is_little_endian.c
-* sign_extension.c
-
-### 2/11
-* sign_to_unsig.c
-* sign_extension.c
-* wraparound.c
-
-### 2/25
-* add.c
-* exit.c
-* swap.c
-
-### 3/11
-* loop.c
-* switch_eg.c
-
-### 3/25
-* test_buff.c
-* test_buff1.c
-
 ## Transfer files to VM
 
 `scp filename(s) user@192.168.237.128:/home/user/Desktop`
@@ -38,7 +16,7 @@ Use `ifconfig` to find the VM's IP Address
 
   `gcc fileName.c -o file-name`
 
-  `gcc fileName.c -o file-name -mpreferred-stack-boundary=2 -fno-stack-protector -g`
+  `gcc fileName.c -o file-name -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack -g`
 
 ### Running C Programs
 
