@@ -26,6 +26,12 @@ Provided programs for ENPM 691 Hacking of C Programs and Unix Binaries at the Un
 * test_buff.c
 * test_buff1.c
 
+## Transfer files to VM
+
+`scp filename(s) user@192.168.237.128:/home/user/Desktop`
+
+Use `ifconfig` to find the VM's IP Address
+
 ## Linux Commands
 
 ### Compiling C Programs
