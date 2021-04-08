@@ -26,7 +26,7 @@ Use `ifconfig` to find the VM's IP Address
 
   `gcc fileName.c -o file-name -ggdb` (Compiles with gdb enabled)
   
-  `gdb file-name`
+  `gdb file-name -q`
 
 | Command       | Function      |
 | ------------- |:-------------:|
