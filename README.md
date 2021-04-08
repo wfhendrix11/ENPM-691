@@ -2,8 +2,6 @@
 
 Provided programs for ENPM 691 Hacking of C Programs and Unix Binaries at the University of Maryland.
 
-## Programs Demo'd
-
 ## Transfer files to VM
 
 `scp filename(s) user@192.168.237.128:/home/user/Desktop`
