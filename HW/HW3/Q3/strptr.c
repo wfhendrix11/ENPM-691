@@ -11,5 +11,4 @@ int main(int argc, char* args[])
   if (system(conf)) printf("Missing .progrc");
 }
 
-// run to print license
 
